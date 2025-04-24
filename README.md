@@ -1,1 +1,1 @@
-"# bootcamp-vass" 
+"bootcamp-vass" 
