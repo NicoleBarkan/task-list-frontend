@@ -1,21 +1,13 @@
 .task-list {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
-    justify-content: center;
-    padding: 2rem;
+    padding: 1rem;
   }
   
   .task-card {
-    width: 320px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    transition: transform 0.3s ease;
-    background-color: #f5faff;
-  
-    &:hover {
-      transform: translateY(-4px);
-    }
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   }
   
   .task-avatar {
@@ -23,19 +15,18 @@
     color: white;
     font-weight: bold;
     display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    align-items: center;
   }
   
   .task-description {
-    margin: 0.5rem 0;
-    color: #444;
+    margin-top: 0.5rem;
+    color: #333;
   }
   
   .task-date {
-    font-size: 0.75rem;
-    color: #666;
-    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #757575;
+    margin-top: 1rem;
   }
   
