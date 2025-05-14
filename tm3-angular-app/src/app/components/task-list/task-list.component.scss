@@ -1,0 +1,32 @@
+.task-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .task-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .task-avatar {
+    background-color: #2196f3;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .task-description {
+    margin-top: 0.5rem;
+    color: #333;
+  }
+  
+  .task-date {
+    font-size: 0.85rem;
+    color: #757575;
+    margin-top: 1rem;
+  }
+  

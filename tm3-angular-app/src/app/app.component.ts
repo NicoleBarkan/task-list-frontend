@@ -1,12 +1,28 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { TaskService } from './services/task.service';
+import { Task } from './models/task.model';
+import { TaskCreateComponent } from './components/task-create/task-create.component';
+import { TaskListComponent } from './components/task-list/task-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [TaskCreateComponent, TaskListComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'tm3-angular-app';
+  constructor(public taskService: TaskService) {}
+
+  get tasks(): Task[] {
+    return this.taskService.getTasks();
+  }
+
+  addTask(task: Task) {
+    this.taskService.addTask(task);
+  }
+
+  deleteTask(index: number) {
+    this.taskService.deleteTask(index);
+  }
 }
