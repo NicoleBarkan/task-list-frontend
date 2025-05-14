@@ -1,2 +1,2 @@
 <app-task-create (taskCreated)="addTask($event)"></app-task-create>
-<app-task-list [tasks]="tasks"></app-task-list>
+<app-task-list [tasks]="tasks" (taskDeleted)="deleteTask($event)"></app-task-list>

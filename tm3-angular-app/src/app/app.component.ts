@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { TaskService } from './services/task.service';
 import { Task } from './models/task.model';
 import { TaskCreateComponent } from './components/task-create/task-create.component';
 import { TaskListComponent } from './components/task-list/task-list.component';
-
 
 @Component({
   selector: 'app-root',
@@ -12,9 +12,17 @@ import { TaskListComponent } from './components/task-list/task-list.component';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  tasks: Task[] = [];
+  constructor(public taskService: TaskService) {}
+
+  get tasks(): Task[] {
+    return this.taskService.getTasks();
+  }
 
   addTask(task: Task) {
-    this.tasks.push(task);
+    this.taskService.addTask(task);
+  }
+
+  deleteTask(index: number) {
+    this.taskService.deleteTask(index);
   }
 }
