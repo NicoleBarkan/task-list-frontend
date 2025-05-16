@@ -7,11 +7,13 @@
       <input matInput formControlName="title" placeholder="Enter task title" />
       <mat-error *ngIf="title?.hasError('required')">Title is required</mat-error>
       <mat-error *ngIf="title?.hasError('minlength')">Title must be at least 4 characters</mat-error>
+      <mat-error *ngIf="title?.hasError('maxlength')">Title must not exceed 50 characters</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Task description(optional)</mat-label>
+      <mat-label>Task description (optional)</mat-label>
       <textarea matInput formControlName="description" rows="3" placeholder="Enter task description"></textarea>
+      <mat-error *ngIf="description?.hasError('maxlength')">Description must not exceed 200 characters</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
