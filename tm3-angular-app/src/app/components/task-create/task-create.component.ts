@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { Task } from '../../models/task.model'; 
+import { Task } from '../../models/task.model';
 
 @Component({
   selector: 'app-task-create',
@@ -30,8 +30,8 @@ export class TaskCreateComponent {
 
   constructor(private fb: FormBuilder) {
     this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(4)]],
-      description: [''],
+      title: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+      description: ['', [Validators.maxLength(200)]],
       type: ['', Validators.required],
       status: ['', Validators.required]
     });
@@ -50,9 +50,12 @@ export class TaskCreateComponent {
     }
   }
 
-  // Геттеры для удобного доступа к ошибкам
   get title() {
     return this.taskForm.get('title');
+  }
+
+  get description() {
+    return this.taskForm.get('description');
   }
 
   get type() {
