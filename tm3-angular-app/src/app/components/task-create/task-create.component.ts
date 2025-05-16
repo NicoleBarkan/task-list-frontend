@@ -50,7 +50,6 @@ export class TaskCreateComponent {
     }
   }
 
-  // Геттеры для удобного доступа к ошибкам
   get title() {
     return this.taskForm.get('title');
   }
