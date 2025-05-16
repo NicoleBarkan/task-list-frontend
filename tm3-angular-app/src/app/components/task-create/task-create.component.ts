@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { Task } from '../../models/task.model'; 
 
-
 @Component({
   selector: 'app-task-create',
   standalone: true,
@@ -31,7 +30,7 @@ export class TaskCreateComponent {
 
   constructor(private fb: FormBuilder) {
     this.taskForm = this.fb.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(4)]],
       description: [''],
       type: ['', Validators.required],
       status: ['', Validators.required]
@@ -40,12 +39,27 @@ export class TaskCreateComponent {
 
   onSubmit() {
     if (this.taskForm.valid) {
-      const newTask = {
+      const newTask: Task = {
         ...this.taskForm.value,
         createdOn: new Date().toISOString()
       };
       this.taskCreated.emit(newTask);
       this.taskForm.reset();
+    } else {
+      this.taskForm.markAllAsTouched();
     }
+  }
+
+  // Геттеры для удобного доступа к ошибкам
+  get title() {
+    return this.taskForm.get('title');
+  }
+
+  get type() {
+    return this.taskForm.get('type');
+  }
+
+  get status() {
+    return this.taskForm.get('status');
   }
 }

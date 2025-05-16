@@ -1,37 +1,40 @@
 <div class="task-form-wrapper">
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
-      <h2>Create a New Task</h2>
-  
-      <mat-form-field appearance="outline">
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title" placeholder="Enter task title" />
-      </mat-form-field>
-  
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description" rows="3"></textarea>
-      </mat-form-field>
-  
-      <mat-form-field appearance="outline">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-          <mat-option value="feature">Feature</mat-option>
-          <mat-option value="bug">Bug</mat-option>
-        </mat-select>
-      </mat-form-field>
-  
-      <mat-form-field appearance="outline">
-        <mat-label>Status</mat-label>
-        <mat-select formControlName="status">
-          <mat-option value="open">Open</mat-option>
-          <mat-option value="in-progress">In Progress</mat-option>
-          <mat-option value="done">Done</mat-option>
-        </mat-select>
-      </mat-form-field>
-  
-      <button mat-raised-button color="primary" type="submit" [disabled]="taskForm.invalid">
-        Create Task
-      </button>
-    </form>
-  </div>
-  
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+    <h2>Create a New Task</h2>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Task title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter task title" />
+      <mat-error *ngIf="title?.hasError('required')">Title is required</mat-error>
+      <mat-error *ngIf="title?.hasError('minlength')">Title must be at least 4 characters</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Task description(optional)</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Enter task description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Task type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="feature">Feature</mat-option>
+        <mat-option value="bug">Bug</mat-option>
+      </mat-select>
+      <mat-error *ngIf="type?.hasError('required')">Type is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Task status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="open">Open</mat-option>
+        <mat-option value="in-progress">In Progress</mat-option>
+        <mat-option value="done">Done</mat-option>
+      </mat-select>
+      <mat-error *ngIf="status?.hasError('required')">Status is required</mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="taskForm.invalid">
+      Create Task
+    </button>
+  </form>
+</div>
