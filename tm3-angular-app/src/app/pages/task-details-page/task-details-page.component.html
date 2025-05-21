@@ -1,0 +1,20 @@
+<div class="task-details-wrapper">
+  <mat-card *ngIf="task; else notFound" class="task-card">
+    <mat-card-title>{{ task.title }}</mat-card-title>
+    <mat-card-subtitle>{{ task.type | titlecase }} • {{ task.status | titlecase }}</mat-card-subtitle>
+
+    <mat-card-content>
+      <p><strong>Description:</strong></p>
+      <p>{{ task.description || 'No description provided.' }}</p>
+      <p><strong>Created On:</strong> {{ task.createdOn | date: 'short' }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #notFound>
+    <mat-card class="task-card">
+      <mat-card-content>
+        <p>⚠️ Task not found.</p>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</div>
