@@ -30,3 +30,14 @@
     margin-top: 1rem;
   }
   
+  .task-link {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1976d2;
+    text-decoration: underline;
+  }
+}
