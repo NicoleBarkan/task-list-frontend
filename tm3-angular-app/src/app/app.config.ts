@@ -16,7 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
 
-    // Подключаем нужные модули через importProvidersFrom
     importProvidersFrom(
       BrowserAnimationsModule,
       ReactiveFormsModule,
