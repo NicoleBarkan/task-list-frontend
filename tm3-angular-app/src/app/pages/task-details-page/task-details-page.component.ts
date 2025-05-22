@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
+import { Observable, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 
@@ -12,13 +13,13 @@ import { MatCardModule } from '@angular/material/card';
   templateUrl: './task-details-page.component.html',
   styleUrls: ['./task-details-page.component.scss']
 })
-export class TaskDetailsPageComponent implements OnInit {
-  task: Task | undefined;
+export class TaskDetailsPageComponent {
+  task$: Observable<Task | undefined> = this.route.paramMap.pipe(
+    map(params => {
+      const index = Number(params.get('id'));
+      return this.taskService.getTaskById(index);
+    })
+  );
 
   constructor(private route: ActivatedRoute, private taskService: TaskService) {}
-
-  ngOnInit(): void {
-    const index = Number(this.route.snapshot.paramMap.get('id'));
-    this.task = this.taskService.getTaskById(index);
-  }
 }
