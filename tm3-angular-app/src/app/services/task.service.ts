@@ -25,6 +25,10 @@ export class TaskService {
     this.saveTasks();
   }
 
+  getTaskById(index: number): Task | null {
+    return this.tasks[index] ?? null;
+  }
+
   private saveTasks() {
     if (typeof window !== 'undefined') {
       localStorage.setItem('tasks', JSON.stringify(this.tasks));
