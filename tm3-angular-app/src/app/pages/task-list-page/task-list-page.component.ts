@@ -11,11 +11,9 @@ import { Task } from '../../models/task.model';
 })
 
 export class TaskListPageComponent {
-  constructor(private taskService: TaskService) {}
+  tasks: Task[] = this.taskService.getTasks();
 
-  get tasks(): Task[] {
-    return this.taskService.getTasks();
-  }
+  constructor(private taskService: TaskService) {}
 
   deleteTask(index: number) {
     this.taskService.deleteTask(index);
