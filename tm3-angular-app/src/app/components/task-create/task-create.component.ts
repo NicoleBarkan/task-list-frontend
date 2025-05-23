@@ -18,7 +18,7 @@ import { Task } from '../../models/task.model';
     MatInputModule,
     MatSelectModule,
     MatOptionModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './task-create.component.html',
   styleUrls: ['./task-create.component.scss']
