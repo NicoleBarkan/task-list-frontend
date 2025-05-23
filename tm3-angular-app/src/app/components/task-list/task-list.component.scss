@@ -1,32 +1,106 @@
 .task-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 1rem;
+  background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+}
+
+.task-list-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem 0;
+}
+
+.task-list-header button {
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.task-list-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  min-height: 90vh;
+}
+
+
+.task-card {
+  width: 360px;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 50px;
+  height: auto; 
+}
+
+.task-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+.task-avatar {
+  background-color: #3f51b5;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+}
+
+.task-link {
+  text-decoration: none;
+  color: #3f51b5;
+  font-weight: 600;
+  font-size: 1.3rem;
+  transition: color 0.2s ease;
+}
+
+.task-link:hover {
+  color: #1e88e5;
+}
+
+.task-meta {
+  color: #757575;
+  font-size: 0.9rem;
+}
+
+.task-description {
+  color: #424242;
+  font-size: 1rem;
+  margin-top: 1.2rem;
+  word-wrap: break-word;
+}
+
+.task-date {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+
+  button {
+    font-weight: 500;
+    padding: 0.4rem 1.2rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #ffd4d9;
+      color: #ff2e43;
+    }
   }
-  
-  .task-card {
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  }
-  
-  .task-avatar {
-    background-color: #2196f3;
-    color: white;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .task-description {
-    margin-top: 0.5rem;
-    color: #333;
-  }
-  
-  .task-date {
-    font-size: 0.85rem;
-    color: #757575;
-    margin-top: 1rem;
-  }
-  
+}

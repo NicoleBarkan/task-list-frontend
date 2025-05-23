@@ -16,14 +16,14 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
 
-    // Подключаем нужные модули через importProvidersFrom
     importProvidersFrom(
       BrowserAnimationsModule,
       ReactiveFormsModule,
       MatFormFieldModule,
       MatInputModule,
       MatSelectModule,
-      MatButtonModule
+      MatButtonModule,
+      BrowserAnimationsModule
     )
   ]
 };
