@@ -25,8 +25,8 @@ export class TaskService {
     this.saveTasks();
   }
 
-  getTaskById(index: number): Task | undefined {
-    return this.tasks[index];
+  getTaskById(index: number): Task | null {
+    return this.tasks[index] ?? null;
   }
 
   private saveTasks() {

@@ -14,7 +14,7 @@ import { MatCardModule } from '@angular/material/card';
   styleUrls: ['./task-details-page.component.scss']
 })
 export class TaskDetailsPageComponent {
-  task$: Observable<Task | undefined> = this.route.paramMap.pipe(
+  task$: Observable<Task | null> = this.route.paramMap.pipe(
     map(params => {
       const index = Number(params.get('id'));
       return this.taskService.getTaskById(index);
