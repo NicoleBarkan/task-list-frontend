@@ -9,9 +9,7 @@
         <div mat-card-avatar class="task-avatar">{{ i + 1 }}</div>
 
         <mat-card-title>
-          <a [routerLink]="['/details', i]" class="task-link">
-            {{ task.title }}
-          </a>
+          <a [routerLink]="['/details', i]" class="task-link">{{ task.title }}</a>
         </mat-card-title>
 
         <mat-card-subtitle>
