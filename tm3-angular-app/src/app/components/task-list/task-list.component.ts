@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Task } from '../../models/task.model';
 import { RouterModule } from '@angular/router';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-task-list',
@@ -13,10 +14,13 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./task-list.component.scss']
 })
 export class TaskListComponent {
-  @Input() tasks: Task[] = [];
-  @Output() taskDeleted = new EventEmitter<number>();
+  constructor(public taskService: TaskService) {}
+
+  get tasks(): Task[] {
+    return this.taskService.getTasks();
+  }
 
   deleteTask(index: number) {
-    this.taskDeleted.emit(index);
+    this.taskService.deleteTask(index);
   }
 }
