@@ -9,9 +9,7 @@
         <div mat-card-avatar class="task-avatar">{{ i + 1 }}</div>
 
         <mat-card-title>
-          <a [routerLink]="['/details', i]" class="task-link">
-            {{ task.title }}
-          </a>
+          <a [routerLink]="['/details', i]" class="task-link">{{ task.title }}</a>
         </mat-card-title>
 
         <mat-card-subtitle>
@@ -25,7 +23,9 @@
       </mat-card-content>
 
       <mat-card-actions align="end">
-        <button mat-stroked-button color="warn" (click)="deleteTask(i)">🗑 Delete</button>
+        <button mat-stroked-button color="warn" (click)="taskDeleted.emit(i)">
+          🗑 Delete
+        </button>
       </mat-card-actions>
     </mat-card>
   </div>
