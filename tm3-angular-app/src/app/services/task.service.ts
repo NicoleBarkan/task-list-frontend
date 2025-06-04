@@ -1,44 +1,29 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Task } from '../models/task.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private tasks: Task[] = [];
+  private apiUrl = 'http://localhost:8080/api/tasks';
 
-  constructor() {
-    this.loadTasks();
+  constructor(private http: HttpClient) {}
+
+  getTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl);
   }
 
-  getTasks(): Task[] {
-    return this.tasks;
+  addTask(task: Task): Observable<Task> {
+    return this.http.post<Task>(this.apiUrl, task);
   }
 
-  addTask(task: Task) {
-    this.tasks.push(task);
-    this.saveTasks();
+  deleteTask(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  deleteTask(index: number) {
-    this.tasks.splice(index, 1);
-    this.saveTasks();
-  }
-
-  getTaskById(index: number): Task | null {
-    return this.tasks[index] ?? null;
-  }
-
-  private saveTasks() {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-    }
-  }
-
-  private loadTasks() {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tasks');
-      this.tasks = saved ? JSON.parse(saved) : [];
-    }
+  getTaskById(id: number): Observable<Task | null> {
+    return this.http.get<Task>(`${this.apiUrl}/${id}`);
   }
 }
