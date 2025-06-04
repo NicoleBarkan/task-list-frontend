@@ -22,8 +22,11 @@
         <p class="task-date">🕒 Created: {{ task.createdOn | date: 'short' }}</p>
       </mat-card-content>
 
-      <mat-card-actions align="end">
-        <button mat-stroked-button color="warn" (click)="deleteTask(task.id)">
+      <mat-card-actions align="end" class="task-actions">
+        <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">
+          Edit
+        </button>
+        <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">
           🗑 Delete
         </button>
       </mat-card-actions>
