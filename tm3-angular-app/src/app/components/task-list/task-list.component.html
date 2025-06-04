@@ -6,7 +6,7 @@
   <div class="task-list-content">
     <mat-card *ngFor="let task of tasks; let i = index" class="task-card">
       <mat-card-header>
-        <div mat-card-avatar class="task-avatar">{{ i + 1 }}</div>
+        <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
 
         <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
           {{ task.title }}
@@ -19,7 +19,7 @@
 
       <mat-card-content>
         <p class="task-description">{{ task.description || 'No description provided.' }}</p>
-        <p class="task-date">🕒 Created: {{ task.createdOn | date: 'short' }}</p>
+        <p class="task-date">🕒 Created: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</p>
       </mat-card-content>
 
       <mat-card-actions align="end" class="task-actions">
