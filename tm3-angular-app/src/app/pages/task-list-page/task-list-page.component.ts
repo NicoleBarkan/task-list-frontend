@@ -28,8 +28,8 @@ export class TaskListPageComponent implements OnInit {
   }
   
   deleteTask(id: number): void {
-    this.taskService.deleteTask(id).subscribe(() => {
-      this.tasks = this.tasks.filter(task => task.id !== id);
+    this.taskService.deleteTask(id).subscribe((updatedTasks: Task[]) => {
+      this.tasks = updatedTasks;
     });
   }
 }
