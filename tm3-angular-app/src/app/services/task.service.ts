@@ -13,15 +13,15 @@ export class TaskService {
   constructor(private http: HttpClient) {}
 
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.apiUrl);
+    return this.http.get<Task[]>(this.tasksEndpoint);
   }
 
   addTask(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.apiUrl, task);
+    return this.http.post<Task>(this.tasksEndpoint, task);
   }
 
-  deleteTask(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteTask(id: number): Observable<Task[]> {
+    return this.http.delete<Task[]>(`${this.tasksEndpoint}/${id}`);
   }
 
   updateTask(id: number, updatedTask: Task): Observable<Task> {
@@ -29,6 +29,6 @@ export class TaskService {
   }
 
   getTaskById(id: number): Observable<Task | null> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+    return this.http.get<Task>(`${this.tasksEndpoint}/${id}`);
   }
 }
