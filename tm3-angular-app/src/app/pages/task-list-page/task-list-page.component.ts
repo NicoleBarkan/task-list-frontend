@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { TaskListComponent } from '../../components/task-list/task-list.component';
@@ -12,14 +12,24 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./task-list-page.component.scss']
 })
 
-export class TaskListPageComponent {
+export class TaskListPageComponent implements OnInit {
+  tasks: Task[] = [];
+
   constructor(private taskService: TaskService) {}
 
-  get tasks(): Task[] {
-    return this.taskService.getTasks();
+  ngOnInit(): void {
+    this.loadTasks();
   }
 
-  deleteTask(index: number) {
-    this.taskService.deleteTask(index);
+  loadTasks(): void {
+    this.taskService.getTasks().subscribe((data) => {
+      this.tasks = data;
+    });
+  }
+  
+  deleteTask(id: number): void {
+    this.taskService.deleteTask(id).subscribe((updatedTasks: Task[]) => {
+      this.tasks = updatedTasks;
+    });
   }
 }
