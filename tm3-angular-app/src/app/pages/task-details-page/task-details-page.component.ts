@@ -21,7 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./task-details-page.component.scss']
 })
 export class TaskDetailsPageComponent {
-  task$!: Observable<Task | null>;
+  task$: Observable<Task | null>;
 
   constructor(
     private route: ActivatedRoute,

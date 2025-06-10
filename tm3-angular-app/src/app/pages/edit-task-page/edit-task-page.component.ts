@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./edit-task-page.component.scss']
 })
 export class EditTaskPageComponent implements OnInit {
-  task!: Task;
+  task: Task | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -22,14 +22,19 @@ export class EditTaskPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.taskService.getTaskById(id).subscribe(task => {
-      if (task) this.task = task;
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (isNaN(id)) return;
+
+      this.taskService.getTaskById(id).subscribe(task => {
+        if (task) this.task = task;
+      });
     });
   }
 
-  updateTask(updatedTask: Task) {
+  updateTask(updatedTask: Task): void {
     if (!this.task?.id) return;
+
     this.taskService.updateTask(this.task.id, updatedTask).subscribe(() => {
       this.router.navigate(['/tasks']);
     });
