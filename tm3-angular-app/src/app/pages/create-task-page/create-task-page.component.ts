@@ -14,7 +14,10 @@ import { Router } from '@angular/router';
 })
 export class CreateTaskPageComponent {
 
-constructor(private taskService: TaskService, private router: Router) {}
+constructor(
+  private taskService: TaskService,
+  private router: Router
+) {}
 
 addTask(task: Task) {
   this.taskService.addTask(task).subscribe(() => {

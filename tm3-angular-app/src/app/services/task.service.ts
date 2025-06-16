@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Task } from '../models/task.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly baseUrl = 'http://localhost:8080/api';
-  private readonly tasksEndpoint = `${this.baseUrl}/tasks`;
+  private apiUrl = environment.apiBaseUrl + '/tasks';
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +22,10 @@ export class TaskService {
 
   deleteTask(id: number): Observable<Task[]> {
     return this.http.delete<Task[]>(`${this.tasksEndpoint}/${id}`);
+  }
+
+  updateTask(id: number, updatedTask: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, updatedTask);
   }
 
   getTaskById(id: number): Observable<Task | null> {
