@@ -1,44 +1,34 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Task } from '../models/task.model';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private tasks: Task[] = [];
+  private apiUrl = environment.apiBaseUrl + '/tasks';
 
-  constructor() {
-    this.loadTasks();
+  constructor(private http: HttpClient) {}
+
+  getTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.tasksEndpoint);
   }
 
-  getTasks(): Task[] {
-    return this.tasks;
+  addTask(task: Task): Observable<Task> {
+    return this.http.post<Task>(this.tasksEndpoint, task);
   }
 
-  addTask(task: Task) {
-    this.tasks.push(task);
-    this.saveTasks();
+  deleteTask(id: number): Observable<Task[]> {
+    return this.http.delete<Task[]>(`${this.tasksEndpoint}/${id}`);
   }
 
-  deleteTask(index: number) {
-    this.tasks.splice(index, 1);
-    this.saveTasks();
+  updateTask(id: number, updatedTask: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, updatedTask);
   }
 
-  getTaskById(index: number): Task | null {
-    return this.tasks[index] ?? null;
-  }
-
-  private saveTasks() {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-    }
-  }
-
-  private loadTasks() {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tasks');
-      this.tasks = saved ? JSON.parse(saved) : [];
-    }
+  getTaskById(id: number): Observable<Task | null> {
+    return this.http.get<Task>(`${this.tasksEndpoint}/${id}`);
   }
 }

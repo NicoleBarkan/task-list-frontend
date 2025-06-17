@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss']
 })
@@ -16,7 +16,7 @@ export class TaskListComponent {
   @Input() tasks: Task[] = [];
   @Output() taskDeleted = new EventEmitter<number>();
 
-  deleteTask(index: number) {
-    this.taskDeleted.emit(index);
+  deleteTask(id: number) {
+    this.taskDeleted.emit(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,10 +23,11 @@ import { Task } from '../../models/task.model';
   templateUrl: './task-create.component.html',
   styleUrls: ['./task-create.component.scss']
 })
-export class TaskCreateComponent {
-  taskForm: FormGroup;
-
+export class TaskCreateComponent implements OnChanges {
+  @Input() task?: Task;
   @Output() taskCreated = new EventEmitter<Task>();
+
+  taskForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.taskForm = this.fb.group({
@@ -37,13 +38,26 @@ export class TaskCreateComponent {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['task'] && this.task) {
+      this.taskForm.patchValue({
+        title: this.task.title,
+        description: this.task.description,
+        type: this.task.type,
+        status: this.task.status
+      });
+    }
+  }
+
   onSubmit() {
     if (this.taskForm.valid) {
-      const newTask: Task = {
+      const updatedTask: Task = {
+        ...(this.task || {}),
         ...this.taskForm.value,
-        createdOn: new Date().toISOString()
+        createdOn: this.task?.createdOn || new Date().toISOString()
       };
-      this.taskCreated.emit(newTask);
+
+      this.taskCreated.emit(updatedTask);
       this.taskForm.reset();
     } else {
       this.taskForm.markAllAsTouched();

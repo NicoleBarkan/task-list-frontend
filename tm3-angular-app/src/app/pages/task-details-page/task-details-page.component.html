@@ -16,7 +16,7 @@
 
         <div class="section">
           <h3>Created On:</h3>
-          <p>{{ task.createdOn | date: 'short' }}</p>
+          <p class="task-date">🕒 Created: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</p>
         </div>
       </mat-card-content>
 
