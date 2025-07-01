@@ -8,7 +8,8 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = environment.apiBaseUrl + '/tasks';
+  private baseApiUrl = environment.apiBaseUrl;
+  private tasksEndpoint = `${this.baseApiUrl}/tasks`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,12 +21,12 @@ export class TaskService {
     return this.http.post<Task>(this.tasksEndpoint, task);
   }
 
-  deleteTask(id: number): Observable<Task[]> {
-    return this.http.delete<Task[]>(`${this.tasksEndpoint}/${id}`);
+  deleteTask(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.tasksEndpoint}/${id}`);
   }
 
   updateTask(id: number, updatedTask: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, updatedTask);
+    return this.http.put<Task>(`${this.tasksEndpoint}/${id}`, updatedTask);
   }
 
   getTaskById(id: number): Observable<Task | null> {

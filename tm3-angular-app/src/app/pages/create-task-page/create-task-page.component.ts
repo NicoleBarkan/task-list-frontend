@@ -19,7 +19,7 @@ constructor(
   private router: Router
 ) {}
 
-addTask(task: Task) {
+addTask(task: Task): void {
   this.taskService.addTask(task).subscribe(() => {
     this.router.navigate(['/tasks']);
   });

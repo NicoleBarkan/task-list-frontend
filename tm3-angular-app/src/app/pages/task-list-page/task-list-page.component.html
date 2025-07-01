@@ -1,1 +1,3 @@
-<app-task-list [tasks]="tasks$ | async" (taskDeleted)="deleteTask($event)"></app-task-list>
+<ng-container *ngIf="tasks$ | async as tasks">
+  <app-task-list [tasks]="tasks" (taskDeleted)="deleteTask($event)"></app-task-list>
+</ng-container>
