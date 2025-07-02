@@ -58,7 +58,6 @@ export class TaskCreateComponent implements OnChanges {
       };
 
       this.taskCreated.emit(updatedTask);
-      this.taskForm.reset();
     } else {
       this.taskForm.markAllAsTouched();
     }

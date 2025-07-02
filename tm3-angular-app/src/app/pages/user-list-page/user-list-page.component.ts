@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../../services/user.service';
-import { Observable } from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
+import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 
@@ -12,7 +13,7 @@ import { MatCardModule } from '@angular/material/card';
   styleUrls: ['./user-list-page.component.scss']
 })
 export class UserListPageComponent implements OnInit {
-  users$!: Observable<User[]>;
+  users$: Observable<User[]> = of([]);
 
   constructor(private userService: UserService) {}
 
