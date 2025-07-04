@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TaskListPageComponent } from './task-list-page.component';
 
 describe('TaskListPageComponent', () => {

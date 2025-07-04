@@ -1,6 +1,8 @@
 <div class="task-list">
   <div class="task-list-header">
-    <button mat-raised-button color="primary" routerLink="/create">Create New Task</button>
+    <button mat-raised-button color="primary" (click)="onCreateTaskClick()">
+      Create New Task
+    </button>
   </div>
 
   <div class="task-list-content">
@@ -19,7 +21,8 @@
 
       <mat-card-content>
         <p class="task-description">{{ task.description || 'No description provided.' }}</p>
-        <p class="task-date">🕒 Created: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</p>
+        <p class="task-date">Created: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</p>
+        <p class="task-date" *ngIf="task.updatedOn">Updated: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</p>
       </mat-card-content>
 
       <mat-card-actions align="end" class="task-actions">
@@ -27,7 +30,7 @@
           Edit
         </button>
         <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">
-          🗑 Delete
+          Delete
         </button>
       </mat-card-actions>
     </mat-card>

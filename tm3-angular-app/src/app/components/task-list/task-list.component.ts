@@ -15,8 +15,14 @@ import { RouterModule } from '@angular/router';
 export class TaskListComponent {
   @Input() tasks: Task[] = [];
   @Output() taskDeleted = new EventEmitter<number>();
+  @Output() createTaskClicked = new EventEmitter<void>();
 
   deleteTask(id: number) {
     this.taskDeleted.emit(id);
   }
+
+  onCreateTaskClick() {
+    this.createTaskClicked.emit();
+  }
 }
+
