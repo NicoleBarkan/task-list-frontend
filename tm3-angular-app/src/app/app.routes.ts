@@ -3,11 +3,13 @@ import { TaskListPageComponent } from './pages/task-list-page/task-list-page.com
 import { CreateTaskPageComponent } from './pages/create-task-page/create-task-page.component';
 import { TaskDetailsPageComponent } from './pages/task-details-page/task-details-page.component';
 import { EditTaskPageComponent } from './pages/edit-task-page/edit-task-page.component';
+import { UserListPageComponent } from './pages/user-list-page/user-list-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'tasks', pathMatch: 'full' },
   { path: 'tasks', component: TaskListPageComponent },
   { path: 'create', component: CreateTaskPageComponent },
   { path: 'details/:id', component: TaskDetailsPageComponent },
-  { path: 'edit/:id', component: EditTaskPageComponent }
+  { path: 'edit/:id', component: EditTaskPageComponent },
+  { path: 'users', component: UserListPageComponent }
 ];

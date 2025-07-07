@@ -1,0 +1,145 @@
+@use "sass:color";
+
+$primary-color: #0052cc;
+$primary-hover: color.adjust($primary-color, $lightness: -10%);
+$error-color: #de350b;
+$background-color: #f4f5f7;
+$form-background: #ffffff;
+$text-color: #172b4d;
+$border-color: #dfe1e6;
+$border-radius: 6px;
+$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+.task-form-wrapper {
+  background-color: $background-color;
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  font-family: $font-family;
+}
+
+.task-form {
+  width: 100%;
+  max-width: 600px;
+  background: $form-background;
+  padding: 30px 40px;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.13);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $text-color;
+
+  h2.form-title {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: $text-color;
+  }
+}
+
+.mat-form-field {
+  width: 100%;
+
+  &.half-width {
+    width: 48%;
+  }
+
+  &.mat-form-field-appearance-outline {
+    background: $form-background;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
+
+    &:hover {
+      border-color: $primary-color;
+    }
+
+    &.mat-focused {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+    }
+
+    .mat-form-field-label {
+      color: $text-color;
+      font-weight: 600;
+    }
+
+    .mat-input-element,
+    .mat-select-trigger {
+      font-size: 1rem;
+      color: $text-color;
+      padding: 12px 14px;
+      font-weight: 400;
+    }
+  }
+}
+
+.mat-error {
+  font-size: 0.85rem;
+  color: $error-color;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+button.mat-stroked-button {
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+  font-weight: 600;
+  padding: 10px 28px;
+  border-radius: $border-radius;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+    background: rgba(0, 82, 204, 0.05);
+  }
+}
+
+button.mat-flat-button {
+  background-color: $primary-color;
+  color: white;
+  font-weight: 600;
+  padding: 10px 28px;
+  border-radius: $border-radius;
+  box-shadow: 0 3px 5px rgba(0, 82, 204, 0.4);
+  transition: background-color 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-hover;
+    box-shadow: 0 6px 12px rgba(0, 82, 204, 0.6);
+  }
+
+  &:disabled {
+    background-color: color.adjust($primary-color, $lightness: 50%);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .mat-form-field.half-width {
+    width: 100%;
+  }
+}

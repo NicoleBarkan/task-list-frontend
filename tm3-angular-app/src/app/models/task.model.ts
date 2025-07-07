@@ -5,4 +5,5 @@ export interface Task {
   type: string;
   status: string;
   createdOn: string | Date;
+  updatedOn?: string;
 }

@@ -1,1 +1,1 @@
-<app-task-create [task]="task ?? undefined" (taskCreated)="updateTask($event)"></app-task-create>
+<app-create-task-page [task]="task ?? undefined" (taskCreated)="updateTask($event)" (cancel)="onCancel()"></app-create-task-page>

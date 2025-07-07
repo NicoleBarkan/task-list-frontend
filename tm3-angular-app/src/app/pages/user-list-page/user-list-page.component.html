@@ -1,0 +1,23 @@
+<div class="user-list">
+  <div class="user-list-header">
+    <h2>Users</h2>
+  </div>
+
+  <div class="user-list-content">
+    <mat-card *ngFor="let user of users$ | async" class="user-card">
+      <mat-card-header>
+        <div mat-card-avatar class="user-avatar">
+          {{ user.username.charAt(0).toUpperCase() }}
+        </div>
+
+        <mat-card-title class="user-name">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-card-title>
+
+        <mat-card-subtitle class="user-username">
+          {{ user.username }}
+        </mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+</div>

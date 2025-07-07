@@ -1,1 +1,50 @@
-<app-task-create (taskCreated)="addTask($event)"></app-task-create>
+<div class="task-form-wrapper">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" novalidate>
+    <h2 class="form-title">{{ isEditMode ? 'Update Task' : 'Create Task' }}</h2>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Task Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter task title" />
+      <mat-error *ngIf="title?.hasError('required')">Title is required</mat-error>
+      <mat-error *ngIf="title?.hasError('minlength')">Minimum 4 characters required</mat-error>
+      <mat-error *ngIf="title?.hasError('maxlength')">Maximum 50 characters allowed</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Task Description (Optional)</mat-label>
+      <textarea matInput formControlName="description" rows="4" placeholder="Enter task description"></textarea>
+      <mat-error *ngIf="description?.hasError('maxlength')">Maximum 200 characters allowed</mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Task Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="EPIC">Epic</mat-option>
+          <mat-option value="STORY">Story</mat-option>
+          <mat-option value="TASK">Task</mat-option>
+          <mat-option value="SUBTASK">Subtask</mat-option>
+          <mat-option value="BUG">Bug</mat-option>
+        </mat-select>
+        <mat-error *ngIf="type?.hasError('required')">Type is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Task Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="OPEN">Open</mat-option>
+          <mat-option value="IN_PROGRESS">In Progress</mat-option>
+          <mat-option value="DONE">Done</mat-option>
+        </mat-select>
+        <mat-error *ngIf="status?.hasError('required')">Status is required</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-actions">
+      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
+        {{ isEditMode ? 'Update Task' : 'Create Task' }}
+      </button>
+    </div>
+  </form>
+</div>
