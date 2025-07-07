@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { Task } from '../../models/task.model';
+import { User } from '../../models/user.model';
+import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -27,6 +29,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class CreateTaskPageComponent implements OnInit {
   task?: Task;
+  users: User[] = [];
   isEditMode = false;
 
   taskForm!: FormGroup;
@@ -35,7 +38,8 @@ export class CreateTaskPageComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dialogRef: MatDialogRef<CreateTaskPageComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task?: Task; isEditMode?: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { task?: Task; isEditMode?: boolean },
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -46,12 +50,17 @@ export class CreateTaskPageComponent implements OnInit {
       title: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       description: ['', [Validators.maxLength(200)]],
       type: ['', Validators.required],
-      status: ['', Validators.required]
+      status: ['', Validators.required],
+      assignedTo: [null],
     });
 
     if (this.task) {
       this.taskForm.patchValue(this.task);
     }
+
+    this.userService.getUsers().subscribe(users => {
+      this.users = users;
+    });
   }
 
   onSubmit() {

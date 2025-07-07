@@ -6,4 +6,5 @@ export interface Task {
   status: string;
   createdOn: string | Date;
   updatedOn?: string;
+  assignedTo?: number;
 }
