@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-create-task-page',
@@ -27,12 +28,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   templateUrl: './create-task-page.component.html',
   styleUrls: ['./create-task-page.component.scss']
 })
-export class CreateTaskPageComponent implements OnInit {
+export class CreateTaskPageComponent implements OnInit, OnDestroy {
   task?: Task;
   users: User[] = [];
   isEditMode = false;
 
   taskForm!: FormGroup;
+
+  private destroy$ = new Subject<void>()
 
   constructor(
     private fb: FormBuilder,
@@ -58,9 +61,16 @@ export class CreateTaskPageComponent implements OnInit {
       this.taskForm.patchValue(this.task);
     }
 
-    this.userService.getUsers().subscribe(users => {
-      this.users = users;
-    });
+    this.userService.getUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(users => {
+        this.users = users;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmit() {

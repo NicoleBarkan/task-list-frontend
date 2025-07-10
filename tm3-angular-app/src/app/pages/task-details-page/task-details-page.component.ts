@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
-import { Observable, switchMap, of } from 'rxjs';
+import { Observable, switchMap, of, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,11 +29,13 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './task-details-page.component.html',
   styleUrls: ['./task-details-page.component.scss']
 })
-export class TaskDetailsPageComponent {
+export class TaskDetailsPageComponent implements OnDestroy {
   task$: Observable<Task | null>;
   task: Task | null = null;
   users: User[] = [];
   assignedToId: number | null = null;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -52,9 +54,16 @@ export class TaskDetailsPageComponent {
       this.assignedToId = task?.assignedTo ?? null;
     });
 
-    this.userService.getUsers().subscribe(users => {
-      this.users = users;
-    });
+    this.userService.getUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(users => {
+        this.users = users;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onAssignedToChange() {
