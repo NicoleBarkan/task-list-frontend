@@ -15,6 +15,20 @@
         </section>
 
         <section class="section">
+          <h3>Assigned To</h3>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Select User</mat-label>
+            <mat-select [(value)]="assignedToId" (selectionChange)="onAssignedToChange()">
+              <mat-option [value]="null">Unassigned</mat-option>
+              <mat-option *ngFor="let user of users" [value]="user.id">
+                {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </section>
+
+        <section class="section">
           <h3>Dates</h3>
           <p>Created<br /><span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span></p>
           <p *ngIf="task.updatedOn">Updated<br /><span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span></p>

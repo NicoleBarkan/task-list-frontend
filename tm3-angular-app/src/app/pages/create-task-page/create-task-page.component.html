@@ -15,6 +15,16 @@
       <textarea matInput formControlName="description" rows="4" placeholder="Enter task description"></textarea>
       <mat-error *ngIf="description?.hasError('maxlength')">Maximum 200 characters allowed</mat-error>
     </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Assign To</mat-label>
+      <mat-select formControlName="assignedTo">
+        <mat-option [value]="null">Unassigned</mat-option>
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
