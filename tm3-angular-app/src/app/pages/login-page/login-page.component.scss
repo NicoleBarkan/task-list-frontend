@@ -1,0 +1,133 @@
+@use "sass:color";
+
+$primary-color: #0052cc;
+$primary-hover: color.adjust($primary-color, $lightness: -10%);
+$error-color: #de350b;
+$background-color: #f4f5f7;
+$form-background: #ffffff;
+$text-color: #172b4d;
+$border-color: #dfe1e6;
+$border-radius: 10px;
+$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+body {
+  background-color: $background-color;
+  font-family: $font-family;
+}
+
+.login-container {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.task-form {
+  width: 100%;
+  max-width: 420px;
+  background-color: $form-background;
+  border-radius: $border-radius;
+  box-shadow: 0 8px 24px rgba(9, 30, 66, 0.2);
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $text-color;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 12px 30px rgba(9, 30, 66, 0.25);
+  }
+
+  h2.form-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: $text-color;
+  }
+}
+
+.mat-form-field {
+  width: 100%;
+
+  &.mat-form-field-appearance-outline {
+    .mat-form-field-outline {
+      border-color: $border-color;
+      border-radius: $border-radius;
+    }
+
+    &:hover .mat-form-field-outline {
+      border-color: $primary-hover;
+    }
+
+    &.mat-focused .mat-form-field-outline {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+    }
+
+    .mat-form-field-label {
+      color: $text-color;
+      font-weight: 500;
+    }
+
+    .mat-input-element {
+      font-size: 1rem;
+      padding: 12px 14px;
+      color: $text-color;
+    }
+  }
+}
+
+.mat-error {
+  font-size: 0.85rem;
+  color: $error-color;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.global-error-message {
+  margin-top: -12px; 
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+button.mat-flat-button {
+  width: 100%;
+  padding: 12px 0;
+  background-color: $primary-color;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: $border-radius;
+  box-shadow: 0 3px 6px rgba(0, 82, 204, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-hover;
+    box-shadow: 0 6px 12px rgba(0, 82, 204, 0.5);
+  }
+
+  &:disabled {
+    background-color: color.adjust($primary-color, $lightness: 50%);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-form {
+    padding: 32px 24px;
+  }
+
+  h2.form-title {
+    font-size: 1.6rem;
+  }
+}

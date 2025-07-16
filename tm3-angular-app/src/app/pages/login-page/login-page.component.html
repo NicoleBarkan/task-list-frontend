@@ -1,0 +1,31 @@
+<div class="login-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="task-form" novalidate>
+    <h2 class="form-title">Login</h2>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" placeholder="Enter your username" />
+      <mat-error *ngIf="form.controls['username'].hasError('required')">
+        Username is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" placeholder="Enter your password" />
+      <mat-error *ngIf="form.controls['password'].hasError('required')">
+        Password is required
+      </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="loginAttempted && errorMessage" class="mat-error global-error-message">
+    {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+        Login
+      </button>
+    </div>
+  </form>
+</div>
