@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +22,7 @@ import { Subject, takeUntil } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    RouterModule
   ],
 })
 export class LoginPageComponent implements OnInit, OnDestroy {

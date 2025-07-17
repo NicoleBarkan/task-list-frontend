@@ -86,12 +86,12 @@ body {
   font-weight: 500;
   margin-top: 4px;
 }
+
 .global-error-message {
-  margin-top: -12px; 
+  margin-top: -12px;
   margin-bottom: 8px;
   text-align: center;
 }
-
 
 .form-actions {
   display: flex;
@@ -119,18 +119,6 @@ button.mat-flat-button {
     background-color: color.adjust($primary-color, $lightness: 50%);
     cursor: not-allowed;
     box-shadow: none;
-  }
-}
-
-
-.register-link {
-  color: $text-color;
-  font-weight: 400;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
   }
 }
 
