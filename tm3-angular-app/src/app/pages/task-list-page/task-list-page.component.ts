@@ -1,28 +1,71 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { TaskService } from '../../services/task.service';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
-import { TaskListComponent } from '../../components/task-list/task-list.component';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
-import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map,  takeUntil } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-task-list-page',
   standalone: true,
-  imports: [CommonModule, TaskListComponent, MatDialogModule ],
+  imports: [CommonModule, MatDialogModule, MatCardModule, MatButtonModule, RouterModule ],
   templateUrl: './task-list-page.component.html',
   styleUrls: ['./task-list-page.component.scss']
 })
-export class TaskListPageComponent {
-  tasks$!: Observable<Task[]>;
+export class TaskListPageComponent implements OnInit, OnDestroy {
+  tasks$: Observable<Task[]> | null = null;
+  firstName: string = '';
+  lastName: string = '';
 
-  constructor(private taskService: TaskService, private dialog: MatDialog, private router: Router ) {}
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private taskService: TaskService, 
+    private dialog: MatDialog, 
+    private router: Router,
+    private userService: UserService,
+    private auth: AuthService
+ ) {}
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 
   ngOnInit(): void {
     this.loadTasks();
+
+    const userId = localStorage.getItem('userId');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (isLoggedIn && userId) {
+      this.userService.fetchUserDetails(userId);
+    } else {
+    this.router.navigate(['/login']);
+    return;
+  }
+
+    this.userService.getUserDetails()      
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (user) {
+          this.firstName = user.firstName;
+          this.lastName = user.lastName;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadTasks(): void {
@@ -38,8 +81,7 @@ export class TaskListPageComponent {
   }
   
   updateTask(id: number, updatedTask: Task) {
-    this.taskService.updateTask(id, updatedTask).subscribe(updated => {
-      console.log('Updated task:', updated);
+    this.taskService.updateTask(id, updatedTask).subscribe(() => {
       this.loadTasks();
       this.router.navigate(['/tasks']);
     });
@@ -51,7 +93,9 @@ export class TaskListPageComponent {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe((newTask: Task | undefined) => {
+    dialogRef.afterClosed()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((newTask: Task | undefined) => {
       if (newTask) {
         this.taskService.addTask(newTask).subscribe(() => {
           this.loadTasks();
@@ -62,6 +106,4 @@ export class TaskListPageComponent {
       }
     });
   }
-
-
 }
