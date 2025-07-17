@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
@@ -8,6 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { AuthResponse } from '../../models/auth-response.model';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -22,27 +24,33 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
   ],
 })
-export class LoginPageComponent implements OnInit {
-  form!: FormGroup;
+export class LoginPageComponent implements OnInit, OnDestroy {
+  form: FormGroup;
   errorMessage = '';
   loginAttempted = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
     private userService: UserService
-  ) {}
-
-  ngOnInit() {
+  ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+  }
 
-    this.form.valueChanges.subscribe(() => {
+  ngOnInit() {
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.errorMessage = '';
     });
+  }
+  
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmit() {
@@ -53,7 +61,7 @@ export class LoginPageComponent implements OnInit {
     const { username, password } = this.form.value;
 
     this.auth.login(username, password).subscribe({
-      next: (res: any) => {
+      next: (res: AuthResponse) => {
         localStorage.setItem('userId', res.userId);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('firstName', res.firstName);

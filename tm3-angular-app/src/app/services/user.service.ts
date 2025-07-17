@@ -3,16 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model'; 
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-interface UserDetails {
-  firstName: string;
-  lastName: string;
-}
+import { UserDetails } from '../models/user-details.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private apiUrl = environment.apiBaseUrl;
-  private userDetails$ = new BehaviorSubject<UserDetails | null>(null);
+  private userDetailsSubject = new BehaviorSubject<UserDetails | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -28,15 +24,15 @@ export class UserService {
 
     this.http.get<UserDetails>(`${this.apiUrl}/auth/user/${userId}`)
       .subscribe({
-        next: user => this.userDetails$.next(user),
+        next: user => this.userDetailsSubject.next(user),
         error: err => {
           console.error('[UserService] Failed to fetch user details:', err);
-          this.userDetails$.next(null);
+          this.userDetailsSubject.next(null);
         }
       });
   }
 
   getUserDetails(): Observable<UserDetails | null> {
-    return this.userDetails$.asObservable();
+    return this.userDetailsSubject.asObservable();
   }
 }
