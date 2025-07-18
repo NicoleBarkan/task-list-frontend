@@ -15,9 +15,7 @@ export class AuthService {
   }
 
   register(user: { username: string, password: string, firstName: string, lastName: string }) {
-    return this.http.post(`${this.apiUrl}/register`, user, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.http.post(`${this.apiUrl}/register`, user);
   }
 
   logout(): void {

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, switchMap } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -35,7 +35,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
     });
@@ -59,9 +59,10 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
     const { username, password, firstName, lastName } = this.form.value;
 
-    this.auth.register({ username, password, firstName, lastName }).subscribe({
-      next: () => {
-        this.auth.login(username, password).subscribe({
+    this.auth.register({ username, password, firstName, lastName }).pipe(
+      switchMap(() => this.auth.login(username, password)),
+      takeUntil(this.destroy$)
+    ).subscribe({
           next: (res) => {
             localStorage.setItem('userId', res.userId);
             localStorage.setItem('isLoggedIn', 'true');
@@ -70,14 +71,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
             this.router.navigate(['/tasks']);
           },
-          error: () => this.errorMessage = 'Login failed after registration.'
-        });
-      },
-      error: (err) => {
-        this.errorMessage =
-          typeof err.error === 'string' ? err.error :
-          err.error?.message || 'Registration failed.';
-      }
-    });
+          error: (err) => {
+            this.errorMessage =
+              typeof err.error === 'string' ? err.error :
+              err.error?.message || 'Registration or login failed.';
+          }
+      });
   }
 }

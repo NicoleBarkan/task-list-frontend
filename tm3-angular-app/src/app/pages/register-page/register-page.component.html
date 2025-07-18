@@ -30,8 +30,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Password</mat-label>
       <input matInput type="password" formControlName="password" placeholder="Choose a password" />
-      @if (form.controls['password'].hasError('required')) {
+      @if (form.controls['password'].hasError('required') && form.controls['password'].touched) {
         <mat-error>Password is required</mat-error>
+      }
+      @else if (form.controls['password'].hasError('minlength') && form.controls['password'].touched) {
+        <mat-error>Password must be at least 6 characters</mat-error>
       }
     </mat-form-field>
 
