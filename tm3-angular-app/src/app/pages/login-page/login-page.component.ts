@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
+import { ErrorResponse } from '../../models/error-response.model';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -72,13 +73,8 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
         this.router.navigate(['/tasks']);
       },
-      error: (err) => {
-        console.error('Login failed:', err);
-        if (err.status === 401) {
-          this.errorMessage = 'Invalid username or password';
-        } else {
-          this.errorMessage = 'Something went wrong. Please try again.';
-        }
+      error: (err: { error: ErrorResponse }) => {
+        this.errorMessage = err?.error?.message || 'Login failed. Please try again.';
       }
     });
   }
