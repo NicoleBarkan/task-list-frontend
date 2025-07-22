@@ -76,7 +76,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       },
       error: (err: HttpErrorResponse) => {
         const error = err.error as ErrorResponse;
-        this.errorMessage = error.message || 'Login failed. Please try again.';
+        this.errorMessage = error.message ?? 'Login failed. Please try again.';
       }
     });
   }

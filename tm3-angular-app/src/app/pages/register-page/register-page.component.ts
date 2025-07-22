@@ -77,7 +77,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       },
       error: (err: HttpErrorResponse) => {
         const error = err.error as ErrorResponse;
-        this.errorMessage = error.message || 'Registration failed.';
+        this.errorMessage = error.message ?? 'Registration failed.';
       }
     });
   }
