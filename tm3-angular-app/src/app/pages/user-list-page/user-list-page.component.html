@@ -6,17 +6,13 @@
   <div class="user-list-content">
     <mat-card *ngFor="let user of users$ | async" class="user-card">
       <mat-card-header>
-        <div mat-card-avatar class="user-avatar">
+        <div class="user-avatar">
           {{ user.username.charAt(0).toUpperCase() }}
         </div>
-
-        <mat-card-title class="user-name">
-          {{ user.firstName }} {{ user.lastName }}
-        </mat-card-title>
-
-        <mat-card-subtitle class="user-username">
-          {{ user.username }}
-        </mat-card-subtitle>
+        <div class="user-info">
+          <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+          <div class="user-username">{{ '@' + user.username }}</div>
+        </div>
       </mat-card-header>
     </mat-card>
   </div>

@@ -6,10 +6,12 @@ import { TaskDetailsPageComponent } from './pages/task-details-page/task-details
 import { EditTaskPageComponent } from './pages/edit-task-page/edit-task-page.component';
 import { UserListPageComponent } from './pages/user-list-page/user-list-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { RegisterPageComponent } from './pages/register-page/register-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent},
+  { path: 'register', component: RegisterPageComponent },
   { path: 'tasks', component: TaskListPageComponent, canActivate: [AuthGuard] },
   { path: 'create', component: CreateTaskPageComponent, canActivate: [AuthGuard] },
   { path: 'details/:id', component: TaskDetailsPageComponent, canActivate: [AuthGuard] },

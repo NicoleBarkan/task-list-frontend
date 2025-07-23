@@ -14,6 +14,10 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username, password });
   }
 
+  register(user: { username: string, password: string, firstName: string, lastName: string }) {
+    return this.http.post(`${this.apiUrl}/register`, user);
+  }
+
   logout(): void {
     localStorage.clear();
   }

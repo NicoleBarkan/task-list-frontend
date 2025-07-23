@@ -1,14 +1,18 @@
+@use '../../../styles/variables';
+
 .user-list {
-  background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+  background-color: #f5f7fa;
+  padding: 2rem 1rem;
   min-height: 90vh;
-  padding: 2rem;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1e293b;
 }
 
 .user-list-header {
-  padding: 1rem 2rem 0;
+  padding: 0 1rem 1.5rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  font-size: 1.5rem;
-  color: #3f51b5;
+  color: #1f2937;
 }
 
 .user-list-content {
@@ -16,57 +20,57 @@
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: center;
-  align-items: flex-start;
 }
 
 .user-card {
+  background: linear-gradient(145deg, #c9c9c9, #f0f4f8);
+  border-radius: 18px;
+  padding: 1.6rem;
   width: 360px;
-  border-radius: 20px;
-  background-color: #ffffff;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  min-height: 120px;
-  cursor: default;
-
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 
-.user-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
-}
-
-.user-avatar {
-  background-color: #3f51b5;
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  margin-right: 16px;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
 }
 
 mat-card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
+  padding: 0;
+}
+
+.user-avatar {
+  background-color: #374151;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
-  font-weight: 600;
-  font-size: 1.3rem;
-  color: #3f51b5;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1e293b;
 }
 
 .user-username {
-  font-size: 1rem;
-  color: #757575;
-  font-style: italic;
-  margin-top: 4px;
+  color: variables.$text-secondary-color;
+  font-size: variables.$font-size-username;
 }
