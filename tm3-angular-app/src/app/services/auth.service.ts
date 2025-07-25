@@ -25,4 +25,18 @@ export class AuthService {
   getUserDetails(userId: number) {
     return this.http.get(`${this.apiUrl}/user/${userId}`);
   }
+
+  getCurrentUser(): any {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
+  }
+
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user?.role?.includes(role);
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ADMIN');
+  }
 }

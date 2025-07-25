@@ -8,10 +8,9 @@
     </div>
   </div>
 
-  <div class="task-create-button">
-    <button mat-raised-button color="primary" (click)="openCreateTask()">
-      Create New Task
-    </button>
+  <div class="header-button" *ngIf="isAdmin()">
+    <button mat-raised-button color="primary" (click)="openCreateTask()">Create New Task</button>
+    <button mat-stroked-button color="accent" routerLink="/users">View Users</button>
   </div>
 
   <div class="task-list-content">
@@ -33,7 +32,7 @@
           <p class="task-date" *ngIf="task.updatedOn">Updated: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</p>
         </mat-card-content>
 
-        <mat-card-actions align="end" class="task-actions">
+        <mat-card-actions align="end" class="task-actions" *ngIf="canEditOrDelete()">
           <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">Edit</button>
           <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">Delete</button>
         </mat-card-actions>

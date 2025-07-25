@@ -106,4 +106,12 @@ export class TaskListPageComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  canEditOrDelete(): boolean {
+    return this.auth.isAdmin();
+  }
+
+  isAdmin(): boolean {
+    return this.auth.isAdmin();
+  }
 }
