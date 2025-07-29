@@ -25,7 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
   ]
 })
 export class UserDetailsPageComponent implements OnInit {
-  user!: User;
+  user: User | null = null;
   roleOptions: RoleOption[] = [];
 
   constructor(
