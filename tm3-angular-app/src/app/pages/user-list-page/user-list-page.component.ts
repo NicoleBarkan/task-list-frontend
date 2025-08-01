@@ -2,13 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Observable, of } from 'rxjs';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-user-list-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule], 
+  imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule], 
   templateUrl: './user-list-page.component.html',
   styleUrls: ['./user-list-page.component.scss']
 })

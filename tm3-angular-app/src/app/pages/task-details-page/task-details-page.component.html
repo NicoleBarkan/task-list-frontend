@@ -17,15 +17,21 @@
         <section class="section">
           <h3>Assigned To</h3>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Select User</mat-label>
-            <mat-select [(value)]="assignedToId" (selectionChange)="onAssignedToChange()">
-              <mat-option [value]="null">Unassigned</mat-option>
-              <mat-option *ngFor="let user of users" [value]="user.id">
-                {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <ng-container *ngIf="canAssign(); else readonlyAssignedUser">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Select User</mat-label>
+              <mat-select [(value)]="assignedToId" (selectionChange)="onAssignedToChange()">
+                <mat-option [value]="null">Unassigned</mat-option>
+                <mat-option *ngFor="let user of users" [value]="user.id">
+                  {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <ng-template #readonlyAssignedUser>
+            <p><strong>Assigned to:</strong> {{ assignedUserName }}</p>
+          </ng-template>
         </section>
 
         <section class="section">

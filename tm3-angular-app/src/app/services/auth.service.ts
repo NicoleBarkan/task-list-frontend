@@ -28,14 +28,18 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/user/${userId}`);
   }
 
-  getCurrentUser(): User | null {
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) as User : null;
+  getCurrentUserRole(): Role[] {
+    const roleJson = localStorage.getItem('role');
+    if (!roleJson) return [];
+    try {
+      return JSON.parse(roleJson) as Role[];
+    } catch {
+      return [];
+    }
   }
 
   hasRole(role: Role): boolean {
-    const user = this.getCurrentUser();
-    return user?.role?.includes(role) ?? false;
+    return this.getCurrentUserRole().includes(role);
   }
 
   isAdmin(): boolean {

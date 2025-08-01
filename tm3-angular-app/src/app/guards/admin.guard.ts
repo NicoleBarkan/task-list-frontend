@@ -2,6 +2,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { isPlatformBrowser } from '@angular/common';
+import { Role } from '../models/role.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminGuard implements CanActivate {
@@ -18,7 +19,7 @@ export class AdminGuard implements CanActivate {
 
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-    if (!isLoggedIn || !this.authService.hasRole('ADMIN')) {
+    if (!isLoggedIn || !this.authService.hasRole(Role.ADMIN)) {
       this.router.navigate(['/login']);
       return false;
     }

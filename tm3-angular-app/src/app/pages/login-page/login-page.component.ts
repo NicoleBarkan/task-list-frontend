@@ -70,9 +70,12 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         localStorage.setItem('firstName', res.firstName);
         localStorage.setItem('lastName', res.lastName);
 
-        this.userService.fetchUserDetails(res.userId);
-
-        this.router.navigate(['/tasks']);
+        this.auth.getUserDetails(+res.userId).subscribe(user => {
+          localStorage.setItem('role', JSON.stringify(user.role));
+          
+          this.userService.fetchUserDetails(res.userId);
+          this.router.navigate(['/tasks']);
+        });
       },
       error: (err: HttpErrorResponse) => {
         const error = err.error as ErrorResponse;

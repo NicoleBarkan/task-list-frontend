@@ -1,6 +1,6 @@
 @use '../../../styles/variables';
 
-.user-list {
+.user-list-wrapper {
   background-color: #f5f7fa;
   padding: 2rem 1rem;
   min-height: 90vh;
@@ -9,10 +9,37 @@
 }
 
 .user-list-header {
-  padding: 0 1rem 1.5rem;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #1f2937;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .back-button {
+    button {
+      background: white;
+      color: #1e293b;
+      border: 2px solid #9ca3af;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s ease;
+
+      &:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+        border-color: #6b7280;
+        transform: translateY(-1px);
+      }
+    }
+  }
 }
 
 .user-list-content {
@@ -22,19 +49,20 @@
   justify-content: center;
 }
 
-.user-card {
-  background: linear-gradient(145deg, #c9c9c9, #f0f4f8);
-  border-radius: 18px;
-  padding: 1.6rem;
-  width: 360px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+mat-card {
+  background: linear-gradient(145deg, #cbd5e1, #f1f5f9);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 340px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -42,16 +70,16 @@ mat-card-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0;
+  padding-bottom: 0;
 }
 
 .user-avatar {
-  background-color: #374151;
-  color: white;
+  background-color: #334155;
+  color: #ffffff;
   font-weight: 700;
   font-size: 1.2rem;
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -62,15 +90,37 @@ mat-card-header {
 .user-info {
   display: flex;
   flex-direction: column;
+
+  .user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .user-username {
+    font-size: 0.95rem;
+    color: #6b7280;
+  }
 }
 
-.user-name {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #1e293b;
-}
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
 
-.user-username {
-  color: variables.$text-secondary-color;
-  font-size: variables.$font-size-username;
+  button {
+    background: white;
+    border: 2px solid #94a3b8;
+    color: #334155;
+    padding: 0.6rem 1.4rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      border-color: #64748b;
+    }
+  }
 }

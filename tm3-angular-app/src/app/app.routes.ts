@@ -1,12 +1,15 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 import { TaskListPageComponent } from './pages/task-list-page/task-list-page.component';
 import { CreateTaskPageComponent } from './pages/create-task-page/create-task-page.component';
 import { TaskDetailsPageComponent } from './pages/task-details-page/task-details-page.component';
 import { EditTaskPageComponent } from './pages/edit-task-page/edit-task-page.component';
 import { UserListPageComponent } from './pages/user-list-page/user-list-page.component';
+import { UserDetailsPageComponent } from './pages/user-details-page/user-details-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,5 +19,6 @@ export const routes: Routes = [
   { path: 'create', component: CreateTaskPageComponent, canActivate: [AuthGuard] },
   { path: 'details/:id', component: TaskDetailsPageComponent, canActivate: [AuthGuard] },
   { path: 'edit/:id', component: EditTaskPageComponent, canActivate: [AuthGuard] },
-  { path: 'users', component: UserListPageComponent, canActivate: [AuthGuard] },
+  { path: 'users', component: UserListPageComponent, canActivate: [AdminGuard] },
+  { path: 'users/:id', component: UserDetailsPageComponent, canActivate: [AdminGuard] }
 ];

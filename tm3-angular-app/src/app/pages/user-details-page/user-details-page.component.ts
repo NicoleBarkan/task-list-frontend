@@ -56,6 +56,8 @@ export class UserDetailsPageComponent implements OnInit {
   }
 
   saveRole(): void {
+    if (!this.user) return;
+
     const selectedRole = this.roleOptions
       .filter(r => r.checked || r.name === 'USER')
       .map(r => r.name);

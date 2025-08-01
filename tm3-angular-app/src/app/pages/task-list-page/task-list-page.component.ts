@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from '../../services/task.service';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/role.model'; 
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
@@ -105,10 +106,6 @@ export class TaskListPageComponent implements OnInit, OnDestroy {
         this.router.navigate(['/tasks']);
       }
     });
-  }
-
-  canEditOrDelete(): boolean {
-    return this.auth.isAdmin();
   }
 
   isAdmin(): boolean {

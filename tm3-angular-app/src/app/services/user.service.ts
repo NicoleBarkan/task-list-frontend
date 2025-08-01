@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserDetails } from '../models/user-details.model';
+import { Role } from '../models/role.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -15,6 +16,15 @@ export class UserService {
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl + '/users');
   }
+
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/users/${id}`);
+  }
+
+  updateUserRole(userId: number, roles: Role[]): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/${userId}/role`, roles);
+  }
+
   
   fetchUserDetails(userId: string | null): void {
     if (!userId) {

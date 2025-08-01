@@ -4,6 +4,8 @@ import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
+import { Role } from '../../models/role.model';
+import { AuthService } from '../../services/auth.service';
 import { Observable, switchMap, of, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +42,8 @@ export class TaskDetailsPageComponent implements OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private taskService: TaskService,
-    private userService: UserService
+    private userService: UserService,
+    private auth: AuthService
   ) {
     this.task$ = this.route.paramMap.pipe(
       switchMap(params => {
@@ -77,5 +80,15 @@ export class TaskDetailsPageComponent implements OnDestroy {
     this.taskService.updateTask(updatedTask.id!, updatedTask).subscribe(updated => {
       this.task = updated;
     });
+  }
+
+  canAssign(): boolean {
+    return this.auth.hasRole(Role.MANAGER);
+  }
+
+  get assignedUserName(): string {
+    if (!this.assignedToId) return 'Unassigned';
+    const user = this.users.find(u => u.id === this.assignedToId);
+    return user ? `${user.firstName} ${user.lastName}` : 'Unassigned';
   }
 }
