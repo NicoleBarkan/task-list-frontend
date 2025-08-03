@@ -10,18 +10,18 @@
 
       <mat-card-content>
         <section class="section">
-          <h3>Description</h3>
-          <p>{{ task.description || 'No description provided.' }}</p>
+          <h3>{{ 'TASK.DETAILS.DESCRIPTION' | translate }}</h3>
+          <p>{{ task.description || ('TASK.DETAILS.NO_DESCRIPTION' | translate) }}</p>
         </section>
 
         <section class="section">
-          <h3>Assigned To</h3>
+          <h3>{{ 'TASK.DETAILS.ASSIGNED_TO' | translate }}</h3>
 
           <ng-container *ngIf="canAssign(); else readonlyAssignedUser">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Select User</mat-label>
+              <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
               <mat-select [(value)]="assignedToId" (selectionChange)="onAssignedToChange()">
-                <mat-option [value]="null">Unassigned</mat-option>
+                <mat-option [value]="null">{{ 'TASK.DETAILS.UNASSIGNED' | translate }}</mat-option>
                 <mat-option *ngFor="let user of users" [value]="user.id">
                   {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
                 </mat-option>
@@ -30,19 +30,26 @@
           </ng-container>
 
           <ng-template #readonlyAssignedUser>
-            <p><strong>Assigned to:</strong> {{ assignedUserName }}</p>
+            <p><strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong> {{ assignedUserName }}</p>
           </ng-template>
         </section>
 
         <section class="section">
-          <h3>Dates</h3>
-          <p>Created<br /><span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span></p>
-          <p *ngIf="task.updatedOn">Updated<br /><span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span></p>
+          <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
+          <p>{{ 'TASK.DETAILS.CREATED' | translate }}<br />
+            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
+          </p>
+          <p *ngIf="task.updatedOn">
+            {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
+            <span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
+          </p>
         </section>
       </mat-card-content>
 
       <mat-card-actions>
-        <button mat-stroked-button color="primary" routerLink="/tasks">← Back to List</button>
+        <button mat-stroked-button color="primary" routerLink="/tasks">
+          ← {{ 'TASK.DETAILS.BACK' | translate }}
+        </button>
       </mat-card-actions>
     </mat-card>
   </ng-container>
@@ -50,9 +57,11 @@
   <ng-template #notFound>
     <mat-card class="task-card">
       <mat-card-content>
-        <p>⚠️ Task not found.</p>
+        <p>{{ 'TASK.DETAILS.NOT_FOUND' | translate }}</p>
         <mat-card-actions>
-          <button mat-stroked-button color="primary" routerLink="/tasks">← Back to List</button>
+          <button mat-stroked-button color="primary" routerLink="/tasks">
+            ← {{ 'TASK.DETAILS.BACK' | translate }}
+          </button>
         </mat-card-actions>
       </mat-card-content>
     </mat-card>

@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { AuthResponse } from '../../models/auth-response.model';
 import { Subject, takeUntil } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login-page',
@@ -24,7 +25,8 @@ import { Subject, takeUntil } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    TranslateModule
   ],
 })
 export class LoginPageComponent implements OnInit, OnDestroy {

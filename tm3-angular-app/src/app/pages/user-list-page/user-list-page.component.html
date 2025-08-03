@@ -1,32 +1,32 @@
 <div class="user-list-wrapper">
   <div class="user-list-header">
-    <h2>Users</h2>
+    <h2>{{ 'USER_LIST.TITLE' | translate }}</h2>
     <div class="back-button">
       <button mat-stroked-button color="accent" routerLink="/tasks">
-        ← Back to Task List
+        ← {{ 'USER_LIST.BACK_TO_TASKS' | translate }}
       </button>
     </div>
   </div>
 
   <div class="user-list-content">
     @for (user of users$ | async; track user.id) {
-    <mat-card>
-      <mat-card-header>
-        <div class="user-avatar">
-          {{ user.username.charAt(0).toUpperCase() }}
-        </div>
-        <div class="user-info">
-          <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
-          <div class="user-username">{{ '@' + user.username }}</div>
-        </div>
-      </mat-card-header>
+      <mat-card>
+        <mat-card-header>
+          <div class="user-avatar">
+            {{ user.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="user-username">{{ '@' + user.username }}</div>
+          </div>
+        </mat-card-header>
 
-      <mat-card-actions>
-        <button mat-stroked-button color="primary" [routerLink]="['/users', user.id]">
-          View Details
-        </button>
-      </mat-card-actions>
-    </mat-card>
+        <mat-card-actions>
+          <button mat-stroked-button color="primary" [routerLink]="['/users', user.id]">
+            {{ 'USER_LIST.VIEW_DETAILS' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
     }
   </div>
 </div>

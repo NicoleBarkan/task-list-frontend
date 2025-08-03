@@ -1,21 +1,26 @@
 <div class="task-list">
-<div class="task-list-header">
-  <div class="greeting-text">
-    Welcome, <strong>{{ firstName }} {{ lastName }}</strong>!
-  </div>
-
-  <div class="right-controls">
-    <div class="logout-button">
-      <button mat-stroked-button color="warn" (click)="logout()">Logout</button>
+  <div class="task-list-header">
+    <div class="greeting-text">
+      {{ 'TASK_LIST.GREETING' | translate }}, <strong>{{ firstName }} {{ lastName }}</strong>!
     </div>
 
-    <div class="admin-buttons" *ngIf="isAdmin()">
-      <button mat-raised-button color="primary" (click)="openCreateTask()">Create New Task</button>
-      <button mat-stroked-button color="accent" routerLink="/users">View Users</button>
+    <div class="right-controls">
+      <div class="logout-button">
+        <button mat-stroked-button color="warn" (click)="logout()">
+          {{ 'TASK_LIST.LOGOUT' | translate }}
+        </button>
+      </div>
+
+      <div class="admin-buttons" *ngIf="isAdmin()">
+        <button mat-raised-button color="primary" (click)="openCreateTask()">
+          {{ 'TASK_LIST.CREATE' | translate }}
+        </button>
+        <button mat-stroked-button color="accent" routerLink="/users">
+          {{ 'TASK_LIST.VIEW_USERS' | translate }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
-
 
   <div class="task-list-content">
     @for (task of tasks$ | async; track task.id) {
@@ -31,14 +36,24 @@
         </mat-card-header>
 
         <mat-card-content>
-          <p class="task-description">{{ task.description || 'No description provided.' }}</p>
-          <p class="task-date">Created: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</p>
-          <p class="task-date" *ngIf="task.updatedOn">Updated: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</p>
+          <p class="task-description">
+            {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
+          </p>
+          <p class="task-date">
+            {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
+          </p>
+          <p class="task-date" *ngIf="task.updatedOn">
+            {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
+          </p>
         </mat-card-content>
 
         <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
-          <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">Edit</button>
-          <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">Delete</button>
+          <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">
+            {{ 'TASK_LIST.EDIT' | translate }}
+          </button>
+          <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">
+            {{ 'TASK_LIST.DELETE' | translate }}
+          </button>
         </mat-card-actions>
       </mat-card>
     }
