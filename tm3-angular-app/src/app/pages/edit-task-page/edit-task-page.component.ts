@@ -5,11 +5,12 @@ import { Task } from '../../models/task.model';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit-task-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   template: '',
   styleUrls: ['./edit-task-page.component.scss']
 })

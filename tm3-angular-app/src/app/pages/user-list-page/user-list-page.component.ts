@@ -6,11 +6,12 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-list-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule], 
+  imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule, TranslateModule ], 
   templateUrl: './user-list-page.component.html',
   styleUrls: ['./user-list-page.component.scss']
 })

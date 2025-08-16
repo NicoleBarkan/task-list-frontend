@@ -1,1 +1,14 @@
-<router-outlet></router-outlet>
+<div class="top-bar">
+  <div class="language-wrapper">
+    <mat-form-field appearance="outline" class="lang-form">
+      <mat-label>{{ 'APP.LANGUAGE' | translate }}</mat-label>
+      <mat-select [value]="selectedLang" (selectionChange)="switchLang($event.value)">
+        <mat-option value="en">English</mat-option>
+        <mat-option value="lv">Latviešu</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+<div class="page">
+  <router-outlet></router-outlet>
+</div>

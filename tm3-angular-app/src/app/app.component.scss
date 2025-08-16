@@ -1,7 +1,39 @@
-.page-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 2rem;
+.top-bar {
+  display: block;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #f5f7fa;
+  padding: 15px 15px;
+  position: sticky;
+  z-index: 100;
+}
+
+.language-wrapper {
+  .lang-form {
+    width: 150px;
+    margin: 0;
+
+    .mat-form-field-wrapper {
+      padding: 0;
+    }
+
+    .mat-select-trigger {
+      font-size: 0.9rem;
+      color: #172b4d;
+    }
+
+    .mat-form-field-outline {
+      border-radius: 6px;
+    }
+
+    &.mat-focused .mat-form-field-outline-thick {
+      border-color: #0052cc;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+    }
   }
-  
+}
+
+.logout-btn {
+  height: 40px;
+  font-weight: 600;
+}

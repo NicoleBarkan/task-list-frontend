@@ -1,40 +1,39 @@
-<div class="login-container">
+<div class="register-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="task-form" novalidate>
-    <h2 class="form-title">Register</h2>
+    <h2 class="form-title">{{ 'REGISTER.TITLE' | translate }}</h2>
 
     <mat-form-field appearance="outline" class="full-width">
-        <mat-label>First name</mat-label>
-        <input matInput formControlName="firstName" placeholder="Enter your first name" />
-        @if (form.controls['firstName'].hasError('required')) {
-            <mat-error>First name is required</mat-error>
-        }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Last name</mat-label>
-        <input matInput formControlName="lastName" placeholder="Enter your last name" />
-        @if (form.controls['lastName'].hasError('required')) {
-            <mat-error>Last name is required</mat-error>
-        }
-    </mat-form-field>
-
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" placeholder="Choose a username" />
-      @if (form.controls['username'].hasError('required')) {
-        <mat-error>Username is required</mat-error>
+      <mat-label>{{ 'REGISTER.FIRST_NAME' | translate }}</mat-label>
+      <input matInput formControlName="firstName" [placeholder]="'REGISTER.PLACEHOLDER.FIRST_NAME' | translate" />
+      @if (form.controls['firstName'].hasError('required')) {
+        <mat-error>{{ 'REGISTER.ERRORS.FIRST_NAME_REQUIRED' | translate }}</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" placeholder="Choose a password" />
+      <mat-label>{{ 'REGISTER.LAST_NAME' | translate }}</mat-label>
+      <input matInput formControlName="lastName" [placeholder]="'REGISTER.PLACEHOLDER.LAST_NAME' | translate" />
+      @if (form.controls['lastName'].hasError('required')) {
+        <mat-error>{{ 'REGISTER.ERRORS.LAST_NAME_REQUIRED' | translate }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'REGISTER.USERNAME' | translate }}</mat-label>
+      <input matInput formControlName="username" [placeholder]="'REGISTER.PLACEHOLDER.USERNAME' | translate" />
+      @if (form.controls['username'].hasError('required')) {
+        <mat-error>{{ 'REGISTER.ERRORS.USERNAME_REQUIRED' | translate }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'REGISTER.PASSWORD' | translate }}</mat-label>
+      <input matInput type="password" formControlName="password" [placeholder]="'REGISTER.PLACEHOLDER.PASSWORD' | translate" />
       @if (form.controls['password'].hasError('required') && form.controls['password'].touched) {
-        <mat-error>Password is required</mat-error>
+        <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_REQUIRED' | translate }}</mat-error>
       }
       @else if (form.controls['password'].hasError('minlength') && form.controls['password'].touched) {
-        <mat-error>Password must be at least 6 characters</mat-error>
+        <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_MINLENGTH' | translate }}</mat-error>
       }
     </mat-form-field>
 
@@ -46,7 +45,7 @@
 
     <div class="form-actions">
       <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-        Register
+        {{ 'REGISTER.SUBMIT' | translate }}
       </button>
     </div>
   </form>

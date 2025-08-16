@@ -1,36 +1,35 @@
 <div class="login-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="task-form" novalidate>
-    <h2 class="form-title">Login</h2>
+    <h2 class="form-title">{{ 'LOGIN.TITLE' | translate }}</h2>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" placeholder="Enter your username" />
+      <mat-label>{{ 'LOGIN.USERNAME_LABEL' | translate }}</mat-label>
+      <input matInput formControlName="username" [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
       <mat-error *ngIf="form.controls['username'].hasError('required')">
-        Username is required
+        {{ 'LOGIN.USERNAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" placeholder="Enter your password" />
+      <mat-label>{{ 'LOGIN.PASSWORD_LABEL' | translate }}</mat-label>
+      <input matInput type="password" formControlName="password" [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" />
       <mat-error *ngIf="form.controls['password'].hasError('required')">
-        Password is required
+        {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <div *ngIf="loginAttempted && errorMessage" class="mat-error global-error-message">
-    {{ errorMessage }}
+      {{ errorMessage }}
     </div>
 
     <div class="form-actions">
       <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-        Login
+        {{ 'LOGIN.SUBMIT_BUTTON' | translate }}
       </button>
     </div>
 
     <div class="form-actions secondary-action">
-        <a routerLink="/register" class="register-link">Don't have an account? Register</a>
+      <a routerLink="/register" class="register-link">{{ 'LOGIN.REGISTER_LINK' | translate }}</a>
     </div>
-
   </form>
 </div>

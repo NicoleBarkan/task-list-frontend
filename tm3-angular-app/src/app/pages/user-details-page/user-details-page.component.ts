@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   standalone: true,
@@ -22,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatCheckboxModule,
     MatButtonModule,
     RouterModule,
+    TranslateModule
   ]
 })
 export class UserDetailsPageComponent implements OnInit {

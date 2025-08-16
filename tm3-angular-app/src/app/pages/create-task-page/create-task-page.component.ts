@@ -12,6 +12,7 @@ import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-create-task-page',
@@ -24,6 +25,7 @@ import { Subject, takeUntil } from 'rxjs';
     MatSelectModule,
     MatOptionModule,
     MatButtonModule,
+    TranslateModule
   ],
   templateUrl: './create-task-page.component.html',
   styleUrls: ['./create-task-page.component.scss']

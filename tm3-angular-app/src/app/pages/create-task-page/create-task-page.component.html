@@ -1,25 +1,25 @@
 <div class="task-form-wrapper">
   <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" novalidate>
-    <h2 class="form-title">{{ isEditMode ? 'Update Task' : 'Create Task' }}</h2>
+    <h2 class="form-title">{{ isEditMode ? ('CREATE.FORM.UPDATE' | translate) : ('CREATE.FORM.CREATE' | translate) }}</h2>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Task Title</mat-label>
-      <input matInput formControlName="title" placeholder="Enter task title" />
-      <mat-error *ngIf="title?.hasError('required')">Title is required</mat-error>
-      <mat-error *ngIf="title?.hasError('minlength')">Minimum 4 characters required</mat-error>
-      <mat-error *ngIf="title?.hasError('maxlength')">Maximum 50 characters allowed</mat-error>
+      <mat-label>{{ 'CREATE.FORM.TITLE_LABEL' | translate }}</mat-label>
+      <input matInput formControlName="title" [placeholder]="'CREATE.FORM.TITLE_PLACEHOLDER' | translate" />
+      <mat-error *ngIf="title?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TITLE_REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="title?.hasError('minlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MINLENGTH' | translate }}</mat-error>
+      <mat-error *ngIf="title?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MAXLENGTH' | translate }}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Task Description (Optional)</mat-label>
-      <textarea matInput formControlName="description" rows="4" placeholder="Enter task description"></textarea>
-      <mat-error *ngIf="description?.hasError('maxlength')">Maximum 200 characters allowed</mat-error>
+      <mat-label>{{ 'CREATE.FORM.DESCRIPTION_LABEL' | translate }}</mat-label>
+      <textarea matInput formControlName="description" rows="4" [placeholder]="'CREATE.FORM.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
+      <mat-error *ngIf="description?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.DESCRIPTION_MAXLENGTH' | translate }}</mat-error>
     </mat-form-field>
     
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Assign To</mat-label>
+      <mat-label>{{ 'CREATE.FORM.ASSIGNED_TO' | translate }}</mat-label>
       <mat-select formControlName="assignedTo">
-        <mat-option [value]="null">Unassigned</mat-option>
+        <mat-option [value]="null">{{ 'CREATE.FORM.UNASSIGNED' | translate }}</mat-option>
         <mat-option *ngFor="let user of users" [value]="user.id">
           {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
         </mat-option>
@@ -28,7 +28,7 @@
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Task Type</mat-label>
+        <mat-label>{{ 'CREATE.FORM.TYPE' | translate }}</mat-label>
         <mat-select formControlName="type">
           <mat-option value="EPIC">Epic</mat-option>
           <mat-option value="STORY">Story</mat-option>
@@ -36,24 +36,26 @@
           <mat-option value="SUBTASK">Subtask</mat-option>
           <mat-option value="BUG">Bug</mat-option>
         </mat-select>
-        <mat-error *ngIf="type?.hasError('required')">Type is required</mat-error>
+        <mat-error *ngIf="type?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TYPE_REQUIRED' | translate }}</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Task Status</mat-label>
+        <mat-label>{{ 'CREATE.FORM.STATUS' | translate }}</mat-label>
         <mat-select formControlName="status">
           <mat-option value="OPEN">Open</mat-option>
           <mat-option value="IN_PROGRESS">In Progress</mat-option>
           <mat-option value="DONE">Done</mat-option>
         </mat-select>
-        <mat-error *ngIf="status?.hasError('required')">Status is required</mat-error>
+        <mat-error *ngIf="status?.hasError('required')">{{ 'CREATE.FORM.ERRORS.STATUS_REQUIRED' | translate }}</mat-error>
       </mat-form-field>
     </div>
 
     <div class="form-actions">
-      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Cancel</button>
+      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">
+        {{ 'CREATE.FORM.CANCEL' | translate }}
+      </button>
       <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
-        {{ isEditMode ? 'Save Task' : 'Create Task' }}
+        {{ isEditMode ? ('CREATE.FORM.SAVE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
       </button>
     </div>
   </form>

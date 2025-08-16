@@ -14,6 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-task-details-page',
@@ -27,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatSelectModule,
     FormsModule,
+    TranslateModule
   ],
   templateUrl: './task-details-page.component.html',
   styleUrls: ['./task-details-page.component.scss']

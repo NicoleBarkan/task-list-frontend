@@ -8,7 +8,7 @@
 
       <mat-card-content>
         <section class="section">
-          <h3>Roles</h3>
+          <h3>{{ 'USER_DETAILS.ROLES' | translate }}</h3>
           @for (role of roleOptions; track role.name) {
             <mat-checkbox
               [(ngModel)]="role.checked"
@@ -21,16 +21,22 @@
       </mat-card-content>
 
       <mat-card-actions>
-        <button mat-stroked-button color="primary" routerLink="/users">← Back to List</button>
-        <button mat-flat-button color="accent" (click)="saveRole()">Save</button>
+        <button mat-stroked-button color="primary" routerLink="/users">
+          ← {{ 'USER_DETAILS.BACK' | translate }}
+        </button>
+        <button mat-flat-button color="accent" (click)="saveRole()">
+          {{ 'USER_DETAILS.SAVE' | translate }}
+        </button>
       </mat-card-actions>
     </mat-card>
   } @else {
     <mat-card class="user-card">
       <mat-card-content>
-        <p>⚠️ User not found.</p>
+        <p>{{ 'USER_DETAILS.NOT_FOUND' | translate }}</p>
         <mat-card-actions>
-          <button mat-stroked-button color="primary" routerLink="/users">← Back to List</button>
+          <button mat-stroked-button color="primary" routerLink="/users">
+            ← {{ 'USER_DETAILS.BACK' | translate }}
+          </button>
         </mat-card-actions>
       </mat-card-content>
     </mat-card>

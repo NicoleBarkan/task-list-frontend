@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from '../../services/task.service';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
-import { Role } from '../../models/role.model'; 
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
@@ -13,11 +12,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-task-list-page',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatCardModule, MatButtonModule, RouterModule ],
+  imports: [CommonModule, MatDialogModule, MatCardModule, MatButtonModule, RouterModule, TranslateModule ],
   templateUrl: './task-list-page.component.html',
   styleUrls: ['./task-list-page.component.scss']
 })
