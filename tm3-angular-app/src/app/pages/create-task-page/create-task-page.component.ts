@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,11 +8,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { Task } from '../../models/task.model';
 import { User } from '../../models/user.model';
-import { UserService } from '../../services/user.service';
-import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Subject, takeUntil } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import { UsersStore } from '../../store/users/users.store';
+
+type newTask = Omit<Task, 'id'> & { id?: number };
 
 @Component({
   selector: 'app-create-task-page',
@@ -30,22 +30,20 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './create-task-page.component.html',
   styleUrls: ['./create-task-page.component.scss']
 })
-export class CreateTaskPageComponent implements OnInit, OnDestroy {
+export class CreateTaskPageComponent implements OnInit {
   task?: Task;
-  users: User[] = [];
   isEditMode = false;
+
+  private usersStore = inject(UsersStore);
+  private fb = inject(FormBuilder);
+  private dialogRef = inject(MatDialogRef<CreateTaskPageComponent>);
+  data = inject(MAT_DIALOG_DATA) as { task?: Task; isEditMode?: boolean };
+
+  users: Signal<ReadonlyArray<User>> = this.usersStore.users;
 
   taskForm!: FormGroup;
 
-  private destroy$ = new Subject<void>()
-
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private dialogRef: MatDialogRef<CreateTaskPageComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task?: Task; isEditMode?: boolean },
-    private userService: UserService
-  ) {}
+  trackById = (_: number, u: { id: number }) => u.id;
 
   ngOnInit() {
     this.task = this.data?.task;
@@ -63,22 +61,13 @@ export class CreateTaskPageComponent implements OnInit, OnDestroy {
       this.taskForm.patchValue(this.task);
     }
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(users => {
-        this.users = users;
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.usersStore.loadUsers();
   }
 
   onSubmit() {
     if (this.taskForm.valid) {
       const nowISO = new Date().toISOString();
-      const newTask: Task = {
+      const newTask: newTask = {
         ...this.taskForm.value,
         createdOn: this.task?.createdOn || nowISO,
         updatedOn: this.isEditMode ? nowISO : undefined,

@@ -18,12 +18,14 @@
     
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'CREATE.FORM.ASSIGNED_TO' | translate }}</mat-label>
-      <mat-select formControlName="assignedTo">
-        <mat-option [value]="null">{{ 'CREATE.FORM.UNASSIGNED' | translate }}</mat-option>
-        <mat-option *ngFor="let user of users" [value]="user.id">
-          {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
-        </mat-option>
-      </mat-select>
+      <ng-container *ngIf="users() as userList">
+        <mat-select formControlName="assignedTo">
+          <mat-option [value]="null">{{ 'CREATE.FORM.UNASSIGNED' | translate }}</mat-option>
+          <mat-option *ngFor="let user of userList; trackBy: trackById" [value]="user.id">
+            {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+          </mat-option>
+        </mat-select>
+      </ng-container>
     </mat-form-field>
 
     <div class="form-row">

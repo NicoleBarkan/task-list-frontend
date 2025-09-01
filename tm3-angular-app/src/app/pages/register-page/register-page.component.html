@@ -37,14 +37,14 @@
       }
     </mat-form-field>
 
-    @if (registrationAttempted && errorMessage) {
+    @if (registrationAttempted() && errorMessage()) {
       <div class="mat-error global-error-message">
-        {{ errorMessage }}
+        {{ errorMessage() }}
       </div>
     }
 
     <div class="form-actions">
-      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading()">
         {{ 'REGISTER.SUBMIT' | translate }}
       </button>
     </div>

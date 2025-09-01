@@ -1,5 +1,5 @@
 <div class="user-details-wrapper">
-  @if (user; as u) {
+  @if (user(); as u) {
     <mat-card class="user-card">
       <mat-card-header>
         <mat-card-title>{{ u.firstName }} {{ u.lastName }}</mat-card-title>

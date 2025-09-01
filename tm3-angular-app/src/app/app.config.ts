@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors,  withFetch, HttpClient } from '@angular/common/http';
@@ -14,6 +14,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { provideStore, provideState } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+
+import { tasksFeature } from './store/tasks/tasks.reducer';
+import { TasksEffects } from './store/tasks/tasks.effects';
 
 export function createTranslateLoader(http: HttpClient): TranslateLoader {
   return new BackendTranslateLoader(http);
@@ -24,26 +30,18 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
-    provideHttpClient(withInterceptors([])),
-
-    importProvidersFrom(
-      BrowserAnimationsModule,
-      ReactiveFormsModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatSelectModule,
-      MatButtonModule,
-      MatDialogModule,
-      HttpClient,
-      TranslateModule.forRoot({
-        defaultLanguage: 'en',
+    provideHttpClient(withFetch(), withInterceptors([])),
+    importProvidersFrom(BrowserAnimationsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, TranslateModule.forRoot({
+        fallbackLang: 'en',
         loader: {
-          provide: TranslateLoader,
-          useFactory: createTranslateLoader,
-          deps: [HttpClient]
+            provide: TranslateLoader,
+            useFactory: createTranslateLoader,
+            deps: [HttpClient]
         }
-      })
-    )
+    })),
+    provideStore(),
+    provideState(tasksFeature),
+    provideEffects([TasksEffects]),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
   ]
 };

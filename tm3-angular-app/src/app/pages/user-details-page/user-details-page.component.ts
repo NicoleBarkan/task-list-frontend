@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
-import { User } from '../../models/user.model';
 import { Role } from '../../models/role.model';
 import { RoleOption } from '../../models/role-option.model';
 import { CommonModule } from '@angular/common';
@@ -10,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
+import { UsersStore } from '../../store/users/users.store';
 
 @Component({
   standalone: true,
@@ -27,25 +26,28 @@ import { TranslateModule } from '@ngx-translate/core';
   ]
 })
 export class UserDetailsPageComponent implements OnInit {
-  user: User | null = null;
+  private usersStore = inject(UsersStore);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  user = this.usersStore.selectedUser;
   roleOptions: RoleOption[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private userService: UserService,
-    private router: Router
-  ) {}
+  syncEffect = effect(() => {
+    const u = this.user();
+    if (u) {
+      this.roleOptions = this.buildRoleOptions(u.role);
+    }
+  });
 
   ngOnInit(): void {
     const userId = Number(this.route.snapshot.paramMap.get('id'));
-
-    this.userService.getUserById(userId).subscribe(user => {
-      this.user = user;
-      this.roleOptions = this.buildRoleOptions(user.role);
-    });
+    this.usersStore.loadUserById(userId);   
   }
 
   buildRoleOptions(userRole: Role[]): RoleOption[] {
+    if (!userRole) userRole = [];
+
     const allRole: RoleOption[] = [
       { name: Role.USER, label: 'User (default)', disabled: true },
       { name: Role.MANAGER, label: 'Manager', disabled: false }
@@ -58,18 +60,20 @@ export class UserDetailsPageComponent implements OnInit {
   }
 
   saveRole(): void {
-    if (!this.user) return;
+    const u = this.user();
+    if (!u) return;
 
     const selectedRole = this.roleOptions
-      .filter(r => r.checked || r.name === 'USER')
-      .map(r => r.name);
+      .filter(r => r.checked || r.name === Role.USER)
+      .map(r => r.name as Role);
 
-    this.userService.updateUserRole(this.user.id, selectedRole).subscribe(() => {
-      this.router.navigate(['/users']); 
-    });
+    this.usersStore.updateUserRole({ id: u.id, role: selectedRole });
+    this.router.navigate(['/users']); 
   }
 
   toggleRole(role: RoleOption): void {
     role.checked = !role.checked;
   }
+
+  trackByName = (_: number, r: RoleOption) => r.name;
 }

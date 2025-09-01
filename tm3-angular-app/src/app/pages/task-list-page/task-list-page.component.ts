@@ -1,18 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../../services/task.service';
-import { UserService } from '../../services/user.service';
-import { AuthService } from '../../services/auth.service';
 import { Task } from '../../models/task.model';
-import { Router } from '@angular/router';
+import { Role } from '../../models/role.model';
+import { Router, RouterModule } from '@angular/router';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
-import { Observable, Subject } from 'rxjs';
-import { map,  takeUntil } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { Store } from '@ngrx/store';
+import * as TasksActions from '../../store/tasks/tasks.actions';
+import { selectTasks, selectTasksLoading } from '../../store/tasks/tasks.reducer';
+import { AuthStore } from '../../store/auth/auth.store';
+
 
 @Component({
   selector: 'app-task-list-page',
@@ -21,71 +21,41 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './task-list-page.component.html',
   styleUrls: ['./task-list-page.component.scss']
 })
-export class TaskListPageComponent implements OnInit, OnDestroy {
-  tasks$: Observable<Task[]> | null = null;
-  firstName: string = '';
-  lastName: string = '';
+export class TaskListPageComponent implements OnInit {
+  private store = inject(Store);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private authStore = inject(AuthStore);
 
-  private destroy$ = new Subject<void>();
+  tasks: Signal<ReadonlyArray<Task>> = this.store.selectSignal(selectTasks);
+  loading: Signal<boolean> = this.store.selectSignal(selectTasksLoading);
 
-  constructor(
-    private taskService: TaskService, 
-    private dialog: MatDialog, 
-    private router: Router,
-    private userService: UserService,
-    private auth: AuthService
- ) {}
+  firstName = '';
+  lastName = '';
 
   logout(): void {
-    this.auth.logout();
+    this.authStore.logout();
     this.router.navigate(['/login']);
   }
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.store.dispatch(TasksActions.loadTasks());
 
-    const userId = localStorage.getItem('userId');
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-    if (isLoggedIn && userId) {
-      this.userService.fetchUserDetails(userId);
+    const user = this.authStore.user();
+    if (user) {
+      this.firstName = user.firstName;
+      this.lastName = user.lastName;
     } else {
-    this.router.navigate(['/login']);
-    return;
-  }
-
-    this.userService.getUserDetails()      
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        if (user) {
-          this.firstName = user.firstName;
-          this.lastName = user.lastName;
-        }
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  loadTasks(): void {
-    this.tasks$ = this.taskService.getTasks().pipe(
-      map(tasks => tasks ?? [])
-    );
+      this.router.navigate(['/login']);
+    }
   }
 
   deleteTask(id: number): void {
-    this.taskService.deleteTask(id).subscribe(() => {
-      this.loadTasks();
-    });
+    this.store.dispatch(TasksActions.deleteTask({ id }));
   }
   
   updateTask(id: number, updatedTask: Task) {
-    this.taskService.updateTask(id, updatedTask).subscribe(() => {
-      this.loadTasks();
-      this.router.navigate(['/tasks']);
-    });
+    this.store.dispatch(TasksActions.updateTask({ id, updatedTask }));
   }
 
   openCreateTask() {
@@ -94,21 +64,16 @@ export class TaskListPageComponent implements OnInit, OnDestroy {
       disableClose: true
     });
 
-    dialogRef.afterClosed()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((newTask: Task | undefined) => {
+    dialogRef.afterClosed().subscribe((newTask: Task | undefined) => {
       if (newTask) {
-        this.taskService.addTask(newTask).subscribe(() => {
-          this.loadTasks();
-          this.router.navigate(['/tasks']);
-        });
-      } else {
-        this.router.navigate(['/tasks']);
+        this.store.dispatch(TasksActions.addTask({ task: newTask }));
       }
     });
   }
 
   isAdmin(): boolean {
-    return this.auth.isAdmin();
+    return this.authStore.user()?.role?.includes(Role.ADMIN) ?? false;
   }
+
+  trackById = (_: number, task: Task) => task.id;
 }

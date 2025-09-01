@@ -23,8 +23,8 @@
   </div>
 
   <div class="task-list-content">
-    @for (task of tasks$ | async; track task.id) {
-      <mat-card class="task-card">
+    <ng-container *ngIf="tasks().length > 0; else noTasks">
+      <mat-card class="task-card" *ngFor="let task of tasks(); trackBy: trackById">
         <mat-card-header>
           <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
           <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
@@ -40,10 +40,10 @@
             {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
           </p>
           <p class="task-date">
-            {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
+            {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn! | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
           </p>
           <p class="task-date" *ngIf="task.updatedOn">
-            {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
+            {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn! | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
           </p>
         </mat-card-content>
 
@@ -56,6 +56,10 @@
           </button>
         </mat-card-actions>
       </mat-card>
-    }
+    </ng-container>
+    
+    <ng-template #noTasks>
+      <p>{{ 'TASK_LIST.NO_TASKS' | translate }}</p>
+    </ng-template>
   </div>
 </div>
