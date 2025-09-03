@@ -46,8 +46,6 @@ export class UserDetailsPageComponent implements OnInit {
   }
 
   buildRoleOptions(userRole: Role[]): RoleOption[] {
-    if (!userRole) userRole = [];
-
     const allRole: RoleOption[] = [
       { name: Role.USER, label: 'User (default)', disabled: true },
       { name: Role.MANAGER, label: 'Manager', disabled: false }
@@ -63,9 +61,11 @@ export class UserDetailsPageComponent implements OnInit {
     const u = this.user();
     if (!u) return;
 
-    const selectedRole = this.roleOptions
-      .filter(r => r.checked || r.name === Role.USER)
-      .map(r => r.name as Role);
+    const selectedRole = Array.from(new Set(
+      this.roleOptions
+        .filter(r => r.checked || r.name === Role.USER)
+        .map(r => r.name as Role)
+    ));
 
     this.usersStore.updateUserRole({ id: u.id, role: selectedRole });
     this.router.navigate(['/users']); 
@@ -75,5 +75,18 @@ export class UserDetailsPageComponent implements OnInit {
     role.checked = !role.checked;
   }
 
-  trackByName = (_: number, r: RoleOption) => r.name;
+  get canSave(): boolean {
+    const u = this.user();
+    if (!u) return false;
+    const selected = new Set(
+      this.roleOptions.filter(r => r.checked || r.name === Role.USER).map(r => r.name)
+    );
+    const original = new Set(u.role ?? []);
+    if (!original.has(Role.USER)) original.add(Role.USER);
+
+    if (selected.size !== original.size) return true;
+    for (const r of selected) if (!original.has(r)) return true;
+    return false;
+  }
+
 }

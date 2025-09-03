@@ -24,38 +24,40 @@
 
   <div class="task-list-content">
     <ng-container *ngIf="tasks().length > 0; else noTasks">
-      <mat-card class="task-card" *ngFor="let task of tasks(); trackBy: trackById">
-        <mat-card-header>
-          <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
-          <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
-            {{ task.title }}
-          </a>
-          <mat-card-subtitle>
-            <span class="task-meta">{{ task.type | titlecase }} • {{ task.status | titlecase }}</span>
-          </mat-card-subtitle>
-        </mat-card-header>
+      @for (task of tasks(); track task.id) {
+        <mat-card class="task-card">
+          <mat-card-header>
+            <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
+            <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
+              {{ task.title }}
+            </a>
+            <mat-card-subtitle>
+              <span class="task-meta">{{ task.type | titlecase }} • {{ task.status | titlecase }}</span>
+            </mat-card-subtitle>
+          </mat-card-header>
 
-        <mat-card-content>
-          <p class="task-description">
-            {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
-          </p>
-          <p class="task-date">
-            {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn! | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
-          </p>
-          <p class="task-date" *ngIf="task.updatedOn">
-            {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn! | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
-          </p>
-        </mat-card-content>
+          <mat-card-content>
+            <p class="task-description">
+              {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
+            </p>
+            <p class="task-date">
+              {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
+            </p>
+            <p class="task-date" *ngIf="task.updatedOn">
+              {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
+            </p>
+          </mat-card-content>
 
-        <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
-          <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">
-            {{ 'TASK_LIST.EDIT' | translate }}
-          </button>
-          <button mat-stroked-button color="warn" (click)="deleteTask(task.id!)">
-            {{ 'TASK_LIST.DELETE' | translate }}
-          </button>
-        </mat-card-actions>
-      </mat-card>
+          <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
+            <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">
+              {{ 'TASK_LIST.EDIT' | translate }}
+            </button>
+            <button mat-stroked-button color="warn" (click)="deleteTask(task.id)">
+              {{ 'TASK_LIST.DELETE' | translate }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
     </ng-container>
     
     <ng-template #noTasks>

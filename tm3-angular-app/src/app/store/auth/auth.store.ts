@@ -34,9 +34,10 @@ export const AuthStore = signalStore(
   withState<AuthState>(initialState),
 
   withComputed((s) => ({
-    fullName: computed(() =>
-      s.user() ? `${s.user()!.firstName} ${s.user()!.lastName}` : ''
-    ),
+    fullName: computed(() => {
+      const u = s.user();
+      return u ? `${u.firstName} ${u.lastName}` : '';
+    }),
     role: computed(() => s.user()?.role ?? null),
   })),
 

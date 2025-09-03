@@ -37,11 +37,11 @@
         <section class="section">
           <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
           <p>{{ 'TASK.DETAILS.CREATED' | translate }}<br />
-            <span class="task-date">{{ task.createdOn! | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</span>
+            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</span>
           </p>
           <p *ngIf="task.updatedOn">
             {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
-            <span class="task-date">{{ task.updatedOn! | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
+            <span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
           </p>
         </section>
       </mat-card-content>
