@@ -1,25 +1,18 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { isPlatformBrowser } from '@angular/common';
+import { AuthStore } from '../store/auth/auth.store';
 import { Role } from '../models/role.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  private auth = inject(AuthStore);
+  private router = inject(Router);
 
   canActivate(): boolean {
-    if (!isPlatformBrowser(this.platformId)) {
-      return false;
-    }
+    const isLoggedIn = this.auth.isLoggedIn();
+    const role = this.auth.role();
 
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-    if (!isLoggedIn || !this.authService.hasRole(Role.ADMIN)) {
+    if (!isLoggedIn || !role || !role.includes(Role.ADMIN)) {
       this.router.navigate(['/login']);
       return false;
     }

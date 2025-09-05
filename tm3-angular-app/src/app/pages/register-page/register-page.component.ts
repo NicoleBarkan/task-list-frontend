@@ -1,16 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-import { ErrorResponse } from '../../models/error-response.model';
-import { HttpErrorResponse } from '@angular/common/http'; 
+import { Component, inject, signal, effect } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuthStore } from '../../store/auth/auth.store';
 
 @Component({
   selector: 'app-register-page',
@@ -26,61 +22,41 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule
   ],
 })
-export class RegisterPageComponent implements OnInit, OnDestroy {
-  form: FormGroup;
-  errorMessage = '';
-  registrationAttempted = false;
-  private destroy$ = new Subject<void>();
+export class RegisterPageComponent {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private auth = inject(AuthStore);
 
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router
-  ) {
-    this.form = this.fb.group({
+  form = this.fb.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
     });
-  }
 
-  ngOnInit() {
-    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.errorMessage = '';
-    });
-  }
+  errorMessage = this.auth.error;
+  loading = this.auth.loading;
+  registrationAttempted = signal(false);
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  constructor() {
+  effect(() => {
+    const err = this.errorMessage();
+    if (err) console.warn('Register error:', err);
+    if (this.auth.user()) {
+      this.router.navigate(['/tasks']);
+    }
+  });
+}
 
   onSubmit() {
-    this.registrationAttempted = true;
+    this.registrationAttempted.set(true);
 
     if (this.form.invalid) return;
 
     const { username, password, firstName, lastName } = this.form.value;
 
-    this.auth.register({ username, password, firstName, lastName }).subscribe({
-      next: () => {
-        this.auth.login(username, password).subscribe({
-          next: (res) => {
-            localStorage.setItem('userId', res.userId);
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('firstName', res.firstName);
-            localStorage.setItem('lastName', res.lastName);
+    if (!username || !password || !firstName || !lastName) return;
 
-            this.router.navigate(['/tasks']);
-          },
-          error: () => this.errorMessage = 'Login failed after registration.'
-        });
-      },
-      error: (err: HttpErrorResponse) => {
-        const error = err.error as ErrorResponse;
-        this.errorMessage = error.message ?? 'Registration failed.';
-      }
-    });
+    this.auth.register({ username, password, firstName, lastName });
   }
 }

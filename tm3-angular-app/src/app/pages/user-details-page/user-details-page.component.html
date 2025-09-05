@@ -1,5 +1,5 @@
 <div class="user-details-wrapper">
-  @if (user; as u) {
+  @if (user(); as u) {
     <mat-card class="user-card">
       <mat-card-header>
         <mat-card-title>{{ u.firstName }} {{ u.lastName }}</mat-card-title>
@@ -24,7 +24,7 @@
         <button mat-stroked-button color="primary" routerLink="/users">
           ← {{ 'USER_DETAILS.BACK' | translate }}
         </button>
-        <button mat-flat-button color="accent" (click)="saveRole()">
+        <button mat-flat-button color="accent" (click)="saveRole()" [disabled]="!canSave">
           {{ 'USER_DETAILS.SAVE' | translate }}
         </button>
       </mat-card-actions>

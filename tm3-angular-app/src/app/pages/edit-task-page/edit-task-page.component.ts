@@ -1,68 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, Signal, effect } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
+import { Store } from '@ngrx/store';
+import * as TasksActions from '../../store/tasks/tasks.actions';
+import { selectSelectedTask } from '../../store/tasks/tasks.reducer';
 
 @Component({
   selector: 'app-edit-task-page',
   standalone: true,
   imports: [CommonModule, RouterModule, TranslateModule],
-  template: '',
+  template: '<p>Waiting task for editing...</p>',
   styleUrls: ['./edit-task-page.component.scss']
 })
 export class EditTaskPageComponent implements OnInit {
-  task: Task | null = null;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private taskService: TaskService,
-    private dialog: MatDialog
-  ) {}
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private store = inject(Store);
+  
+  task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
+  private dialogOpened = false;
+  
+  constructor() {
+    effect(() => {
+      const current = this.task();
+      if (current && !this.dialogOpened) {
+        this.dialogOpened = true;
+        this.openEditDialog(current);
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
+      const id = Number( this.route.snapshot.paramMap.get('id'));
       if (isNaN(id)) {
         this.router.navigate(['/tasks']);
         return;
       }
 
-      this.taskService.getTaskById(id).subscribe(task => {
-        if (task) {
-          this.task = task;
-          this.openEditDialog();
-        } else {
-          this.router.navigate(['/tasks']);
-        }
-      });
-    });
+    this.store.dispatch(TasksActions.loadTaskById({ id }));
   }
 
-  openEditDialog(): void {
+  openEditDialog(task: Task): void {
     const dialogRef = this.dialog.open(CreateTaskPageComponent, {
       width: '600px',
       disableClose: true,
       data: {
-        task: this.task,
+        task,
         isEditMode: true
       }
     });
 
     dialogRef.afterClosed().subscribe((updatedTask: Task | undefined) => {
-      if (updatedTask && this.task) {
-        this.taskService.updateTask(this.task.id, updatedTask).subscribe((updated) => {
-          console.log('Updated task from server:', updated);
-          this.router.navigate(['/tasks']);
-        });
-      } else {
-        this.router.navigate(['/tasks']);
+      if (updatedTask) {
+        this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask }));
       }
+      this.router.navigate(['/tasks']);
     });
   }
-
 }

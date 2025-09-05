@@ -18,8 +18,8 @@
       </mat-error>
     </mat-form-field>
 
-    <div *ngIf="loginAttempted && errorMessage" class="mat-error global-error-message">
-      {{ errorMessage }}
+    <div *ngIf="loginAttempted() && errorMessage()" class="mat-error global-error-message">
+      {{ errorMessage() }}
     </div>
 
     <div class="form-actions">

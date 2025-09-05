@@ -1,12 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, Signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
-import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Role } from '../../models/role.model';
-import { AuthService } from '../../services/auth.service';
-import { Observable, switchMap, of, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +11,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { Store } from '@ngrx/store';
+import * as TasksActions from '../../store/tasks/tasks.actions';
+import { selectSelectedTask } from '../../store/tasks/tasks.reducer';
+import { UsersStore } from '../../store/users/users.store';
+import { AuthStore } from '../../store/auth/auth.store';
 
 @Component({
   selector: 'app-task-details-page',
@@ -33,64 +35,42 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './task-details-page.component.html',
   styleUrls: ['./task-details-page.component.scss']
 })
-export class TaskDetailsPageComponent implements OnDestroy {
-  task$: Observable<Task | null>;
-  task: Task | null = null;
-  users: User[] = [];
-  assignedToId: number | null = null;
-  
-  private destroy$ = new Subject<void>();
+export class TaskDetailsPageComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private store = inject(Store);
+  private usersStore = inject(UsersStore);
+  private authStore = inject(AuthStore);
 
-  constructor(
-    private route: ActivatedRoute,
-    private taskService: TaskService,
-    private userService: UserService,
-    private auth: AuthService
-  ) {
-    this.task$ = this.route.paramMap.pipe(
-      switchMap(params => {
-        const id = Number(params.get('id'));
-        return isNaN(id) ? of(null) : this.taskService.getTaskById(id);
-      })
-    );
+  task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
+  users: Signal<ReadonlyArray<User>> = this.usersStore.users;
 
-    this.task$.subscribe(task => {
-      this.task = task;
-      this.assignedToId = task?.assignedTo ?? null;
-    });
+  assignedToId = computed(() => this.task()?.assignedTo ?? null);
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(users => {
-        this.users = users;
-      });
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!isNaN(id)) {
+      this.store.dispatch(TasksActions.loadTaskById({ id }));
+    }
+    this.usersStore.loadUsers();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  onAssignedToChange() {
-    if (!this.task) return;
-
-    const updatedTask: Task = {
-      ...this.task,
-      assignedTo: this.assignedToId ?? undefined
-    };
-
-    this.taskService.updateTask(updatedTask.id!, updatedTask).subscribe(updated => {
-      this.task = updated;
-    });
+  onAssignedToChange(newUserId: number | null) {
+    const task = this.task();
+    if (!task) return;
+    const updated: Task = { ...task, assignedTo: newUserId ?? undefined };
+    this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
   }
 
   canAssign(): boolean {
-    return this.auth.hasRole(Role.MANAGER);
+    return this.authStore.user()?.role?.includes(Role.MANAGER) ?? false;
   }
 
   get assignedUserName(): string {
-    if (!this.assignedToId) return 'Unassigned';
-    const user = this.users.find(u => u.id === this.assignedToId);
+    const currentId = this.assignedToId();
+    if (!currentId) return 'Unassigned';
+    const user = this.users().find((u) => u.id === currentId);
     return user ? `${user.firstName} ${user.lastName}` : 'Unassigned';
   }
+
+  trackById = (_: number, u: User) => u.id;
 }

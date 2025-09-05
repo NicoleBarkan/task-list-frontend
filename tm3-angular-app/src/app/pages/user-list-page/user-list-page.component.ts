@@ -1,12 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../services/user.service';
-import { User } from '../../models/user.model';
-import { Observable, of } from 'rxjs';
+import { Component, inject, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
+import { UsersStore } from '../../store/users/users.store';
 
 @Component({
   selector: 'app-user-list-page',
@@ -15,12 +13,18 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './user-list-page.component.html',
   styleUrls: ['./user-list-page.component.scss']
 })
-export class UserListPageComponent implements OnInit {
-  users$: Observable<User[]> = of([]);
+export class UserListPageComponent{
+  store = inject(UsersStore);
 
-  constructor(private userService: UserService) {}
+  users = this.store.users;
+  loading = this.store.loading;
+  error = this.store.error;
 
-  ngOnInit(): void {
-    this.users$ = this.userService.getUsers();
+  constructor() {
+    effect(() => {
+      if (this.error()) {
+        console.error('Ошибка загрузки пользователей:', this.error());
+      }
+    });
   }
 }

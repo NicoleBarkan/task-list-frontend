@@ -1,5 +1,5 @@
 <div class="task-details-wrapper">
-  <ng-container *ngIf="task$ | async as task; else notFound">
+  <ng-container *ngIf="task() as task; else notFound">
     <mat-card class="task-card">
       <mat-card-header>
         <mat-card-title>{{ task.title }}</mat-card-title>
@@ -20,9 +20,9 @@
           <ng-container *ngIf="canAssign(); else readonlyAssignedUser">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
-              <mat-select [(value)]="assignedToId" (selectionChange)="onAssignedToChange()">
+              <mat-select [value]="assignedToId()" (selectionChange)="onAssignedToChange($event.value)">
                 <mat-option [value]="null">{{ 'TASK.DETAILS.UNASSIGNED' | translate }}</mat-option>
-                <mat-option *ngFor="let user of users" [value]="user.id">
+                <mat-option *ngFor="let user of users(); trackBy: trackById" [value]="user.id">
                   {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
                 </mat-option>
               </mat-select>
@@ -37,7 +37,7 @@
         <section class="section">
           <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
           <p>{{ 'TASK.DETAILS.CREATED' | translate }}<br />
-            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
+            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</span>
           </p>
           <p *ngIf="task.updatedOn">
             {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
