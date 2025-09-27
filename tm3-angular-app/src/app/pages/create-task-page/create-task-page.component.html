@@ -28,6 +28,14 @@
       </ng-container>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width" *ngIf="isAdminOrManager">
+      <mat-label>{{ 'CREATE.FORM.GROUP' | translate }}</mat-label>
+      <mat-select formControlName="groupId" required>
+        <mat-option *ngFor="let g of groups" [value]="g.id">{{ g.name }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="groupId?.hasError('required')">{{ 'CREATE.FORM.ERRORS.GROUP_REQUIRED' | translate }}</mat-error>
+    </mat-form-field>
+
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>{{ 'CREATE.FORM.TYPE' | translate }}</mat-label>

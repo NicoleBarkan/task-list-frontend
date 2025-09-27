@@ -1,0 +1,72 @@
+@use "sass:color";
+
+$primary: #0052cc;
+$primary-hover: color.adjust($primary, $lightness: -10%);
+$text: #172b4d;
+$muted: #dfe1e6;
+
+:host { display: block; }
+
+.sheet-title {
+  position: relative;
+  margin: 0;
+  padding: clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 24px);
+  text-align: center;
+  font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+  font-weight: 600;
+  color: $text;
+}
+.sheet-close { position: absolute; top: 6px; right: 6px; }
+
+.sheet-body {
+  padding: clamp(10px, 2.3vw, 24px);
+  max-height: calc(100dvh - 160px);
+  overflow: auto;
+}
+
+.sheet-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.13);
+  padding: clamp(28px, 3vw, 32px);
+  width: clamp(2px, auto, 640px);
+  margin-inline: auto;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.4vw, 24px);
+}
+.full { width: 100%; }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+
+  .mat-mdc-stroked-button {
+    border-color: $muted;
+    color: $text;
+    font-weight: 600;
+    &:hover { border-color: $primary; color: $primary; background: rgba(0, 82, 204, .05); }
+  }
+
+  .mat-mdc-unelevated-button {
+    background-color: $primary;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 28px;
+    box-shadow: 0 3px 5px rgba(0, 82, 204, 0.4);
+    transition: background-color .3s ease;
+
+    &:hover:not(:disabled) { background-color: $primary-hover; box-shadow: 0 6px 12px rgba(0, 82, 204, 0.6); }
+    &:disabled { background-color: color.adjust(#5a6575, $lightness: 50%); box-shadow: none; cursor: not-allowed; }
+  }
+}
+
+@media (max-width: 600px) {
+  .sheet-card { border-radius: 14px; }
+}

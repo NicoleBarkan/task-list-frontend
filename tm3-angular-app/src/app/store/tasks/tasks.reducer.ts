@@ -25,8 +25,9 @@ export const tasksFeature = createFeature({
     on(TasksActions.loadTasksSuccess, (s: TasksState, { tasks }: { tasks: Task[] }): TasksState => ({ ...s, list: tasks, loading: false })),
     on(TasksActions.loadTasksFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, loading: false, error })),
 
-    on(TasksActions.loadTaskById, (s: TasksState, _payload: { id: number }): TasksState => ({ ...s, loading: true, error: null, selectedTask: null })),
-    on(TasksActions.loadTaskByIdSuccess, (s: TasksState, { task }: { task: Task | null }): TasksState => ({ ...s, selectedTask: task, loading: false })),
+    on(TasksActions.loadTaskById, (s) => ({ ...s, loading: true, error: null, selectedTask: null })),
+    on(TasksActions.loadTaskByIdSuccess, (s, { task }) => ({ ...s, selectedTask: task, loading: false })),
+
     on(TasksActions.loadTaskByIdFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, loading: false, error })),
 
     on(TasksActions.addTaskSuccess, (s: TasksState, { task }: { task: Task }): TasksState => ({ ...s, list: [task, ...s.list] })),

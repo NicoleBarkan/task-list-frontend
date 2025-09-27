@@ -1,7 +1,9 @@
-import { User } from './user.model';
+import { Role } from '../models/role.model';
 
 export interface AuthResponse {
-  userId: string;
+  token: string;
+  userId: number;
   firstName: string;
   lastName: string;
+  role: Role[];
 }

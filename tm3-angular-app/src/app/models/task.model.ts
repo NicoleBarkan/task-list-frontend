@@ -4,7 +4,8 @@ export interface Task {
   description: string;
   type: string;
   status: string;
-  createdOn: string | Date;
-  updatedOn?: string | Date;
-  assignedTo?: number;
+  createdOn: string;  
+  updatedOn?: string | null;
+  assignedTo?: number | null;
+  groupId?: number | null;
 }

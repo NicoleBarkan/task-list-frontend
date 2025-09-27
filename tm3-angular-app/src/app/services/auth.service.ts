@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AuthResponse } from '../models/auth-response.model';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
@@ -12,8 +13,15 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username, password });
+  login(u: string, p: string) {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username: u, password: p })
+      .pipe(
+        tap((res: AuthResponse) => {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('role', JSON.stringify(res.role));
+          localStorage.setItem('userId', String(res.userId));
+        })
+      );
   }
 
   register(user: { username: string, password: string, firstName: string, lastName: string }): Observable<void> {

@@ -17,7 +17,7 @@
         <section class="section">
           <h3>{{ 'TASK.DETAILS.ASSIGNED_TO' | translate }}</h3>
 
-          <ng-container *ngIf="canAssign(); else readonlyAssignedUser">
+          <ng-container *ngIf="IsAdminOrManager(); else readonlyAssignedUser">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
               <mat-select [value]="assignedToId()" (selectionChange)="onAssignedToChange($event.value)">
@@ -34,10 +34,29 @@
           </ng-template>
         </section>
 
+          <section class="section">
+            <h3>{{ 'TASK.DETAILS.GROUP' | translate }}</h3>
+
+            <ng-container *ngIf="IsAdminOrManager(); else readonlyGroup">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'TASK.DETAILS.GROUP' | translate }}</mat-label>
+                <mat-select [value]="groupId()" (selectionChange)="onGroupChange($event.value)">
+                  <mat-option *ngFor="let g of groups" [value]="g.id">{{ g.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-template #readonlyGroup>
+              <p><strong>{{ 'TASK.DETAILS.GROUP' | translate }}:</strong>
+                {{ groupNameById(groupId()) || ('GROUP_LIST.NO_DESCRIPTION' | translate) }}
+              </p>
+            </ng-template>
+          </section>
+
         <section class="section">
           <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
           <p>{{ 'TASK.DETAILS.CREATED' | translate }}<br />
-            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}</span>
+            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
           </p>
           <p *ngIf="task.updatedOn">
             {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
