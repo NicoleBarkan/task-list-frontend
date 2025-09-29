@@ -1,4 +1,4 @@
-<div class="group-details-wrapper" *ngIf="group">
+<div class="group-details-wrapper" *ngIf="group() as g">
   <div class="container">
 
     <div class="back-bar">
@@ -11,17 +11,17 @@
     <section class="hero">
       <div class="hero-main">
         <div class="avatar" aria-hidden="true">
-          {{ (group.name || '?').charAt(0).toUpperCase() }}
+          {{ (g.name || '?') | slice:0:1 | uppercase }}
         </div>
         <div class="hero-info">
-          <h1 class="title" [title]="group.name">{{ group.name }}</h1>
+          <h1 class="title" [title]="g.name || ''">{{ g.name || '' }}</h1>
           <div class="meta">
             <span class="muted">{{ 'GROUP_DETAILS.USERS_TITLE' | translate }}:</span>
-            <span class="count">{{ users.length }}</span>
+            <span class="count">{{ users().length }}</span>
           </div>
           <div class="meta">
             <span class="muted">{{ 'GROUP_DETAILS.TASKS_TITLE' | translate }}:</span>
-            <span class="count">{{ tasks.length }}</span>
+            <span class="count">{{ tasks().length }}</span>
           </div>
         </div>
       </div>
@@ -31,13 +31,13 @@
       <div class="kv">
         <div class="row">
           <div class="label">{{ 'GROUP_DETAILS.NAME' | translate }}</div>
-          <div class="value">{{ group.name }}</div>
+          <div class="value">{{ g.name || '' }}</div>
         </div>
         <mat-divider></mat-divider>
         <div class="row">
           <div class="label">{{ 'GROUP_DETAILS.DESCRIPTION' | translate }}</div>
           <div class="value">
-            {{ group.description || ('GROUP_DETAILS.NO_DESCRIPTION' | translate) }}
+            {{ g.description || ('GROUP_DETAILS.NO_DESCRIPTION' | translate) }}
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
     <h3 class="section-title">{{ 'USERS.IN_GROUP_TITLE' | translate }}</h3>
     <mat-card class="tasks-card">
     <div class="table-wrap">
-        <table mat-table [dataSource]="users" class="tasks-table">
+        <table mat-table [dataSource]="users()" class="tasks-table">
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
             <td mat-cell *matCellDef="let u">{{ u.id }}</td>
@@ -81,7 +81,7 @@
         </table>
     </div>
 
-    <div *ngIf="!users?.length" class="empty">
+    <div *ngIf="!users()?.length" class="empty">
         <mat-icon>group</mat-icon>
         <div class="empty-title">{{ 'USERS.NO_USERS' | translate }}</div>
     </div>
@@ -90,7 +90,7 @@
     <h3 class="section-title">{{ 'GROUP_DETAILS.TASKS_TITLE' | translate }}</h3>
     <mat-card class="tasks-card">
       <div class="table-wrap">
-        <table mat-table [dataSource]="tasks" class="tasks-table">
+        <table mat-table [dataSource]="tasks()" class="tasks-table">
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
             <td mat-cell *matCellDef="let t" [attr.data-col]="'ID'">{{ t.id }}</td>
@@ -136,7 +136,7 @@
         </table>
       </div>
 
-      <div *ngIf="!tasks?.length" class="empty">
+      <div *ngIf="(tasks() || []).length === 0" class="empty">
         <mat-icon>inbox</mat-icon>
         <div class="empty-title">{{ 'GROUP_DETAILS.NO_TASKS' | translate }}</div>
       </div>

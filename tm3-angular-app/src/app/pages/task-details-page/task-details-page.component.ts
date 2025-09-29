@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal, computed } from '@angular/core';
+import { Component, OnInit, inject, Signal, computed, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Task } from '../../models/task.model';
 import { User } from '../../models/user.model';
@@ -21,6 +21,7 @@ import { AuthStore } from '../../store/auth/auth.store';
 
 import { GroupService } from '../../services/group.service';
 import { GroupDto } from '../../models/group.model';
+import { getGroupNameById } from '../../utils/display.utils';
 
 @Component({
   selector: 'app-task-details-page',
@@ -45,14 +46,14 @@ export class TaskDetailsPageComponent implements OnInit {
   private store = inject(Store);
   private usersStore = inject(UsersStore);
   private authStore = inject(AuthStore);
-  private groupsApi = inject(GroupService);             
+  private groupsService = inject(GroupService);             
 
   task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
   users: Signal<ReadonlyArray<User>> = this.usersStore.users;
 
   assignedToId = computed(() => this.task()?.assignedTo ?? null);
 
-  groups: GroupDto[] = [];                                 
+  groups = signal<GroupDto[]>([]);                                 
   groupId = computed(() => this.task()?.groupId ?? null);  
 
   ngOnInit(): void {
@@ -62,10 +63,10 @@ export class TaskDetailsPageComponent implements OnInit {
     }
     this.usersStore.loadUsers();
 
-    if (this.IsAdminOrManager()) {
-      this.groupsApi.list().subscribe({
-        next: gs => this.groups = gs,
-        error: () => this.groups = []
+    if (this.isAdminOrManager()) {
+      this.groupsService.list().subscribe({
+        next: groups => this.groups.set(groups),
+        error: () => this.groups.set([])
       });
     }
   }
@@ -80,11 +81,11 @@ export class TaskDetailsPageComponent implements OnInit {
   onGroupChange(newGroupId: number | null) {
     const task = this.task();
     if (!task || newGroupId == null) return;
-    const updated: any = { group: { id: newGroupId } };
+    const updated: Partial<Task> = { groupId: newGroupId };
     this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
   }
 
-  IsAdminOrManager(): boolean {
+  isAdminOrManager(): boolean {
     return this.authStore.hasRole(Role.MANAGER) || this.authStore.hasRole(Role.ADMIN);
   }
 
@@ -95,10 +96,8 @@ export class TaskDetailsPageComponent implements OnInit {
     return user ? `${user.firstName} ${user.lastName}` : 'Unassigned';
   }
 
-  groupNameById(id: number | null): string {
-    if (!id) return '';
-    const g = this.groups.find(x => x.id === id);
-    return g?.name ?? String(id);
+  currentGroupNameById(id: number | null): string {
+    return getGroupNameById(this.groups(), id);
   }
 
   trackById = (_: number, u: User) => u.id;

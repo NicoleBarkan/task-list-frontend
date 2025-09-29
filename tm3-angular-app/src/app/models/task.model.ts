@@ -7,5 +7,5 @@ export interface Task {
   createdOn: string;  
   updatedOn?: string | null;
   assignedTo?: number | null;
-  groupId?: number | null;
+  groupId: number | null;
 }

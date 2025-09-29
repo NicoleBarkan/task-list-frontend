@@ -17,7 +17,7 @@
         <section class="section">
           <h3>{{ 'TASK.DETAILS.ASSIGNED_TO' | translate }}</h3>
 
-          <ng-container *ngIf="IsAdminOrManager(); else readonlyAssignedUser">
+          <ng-container *ngIf="isAdminOrManager(); else readonlyAssignedUser">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
               <mat-select [value]="assignedToId()" (selectionChange)="onAssignedToChange($event.value)">
@@ -37,18 +37,18 @@
           <section class="section">
             <h3>{{ 'TASK.DETAILS.GROUP' | translate }}</h3>
 
-            <ng-container *ngIf="IsAdminOrManager(); else readonlyGroup">
+            <ng-container *ngIf="isAdminOrManager(); else readonlyGroup">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>{{ 'TASK.DETAILS.GROUP' | translate }}</mat-label>
                 <mat-select [value]="groupId()" (selectionChange)="onGroupChange($event.value)">
-                  <mat-option *ngFor="let g of groups" [value]="g.id">{{ g.name }}</mat-option>
+                  <mat-option *ngFor="let g of groups()" [value]="g.id">{{ g.name }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </ng-container>
 
             <ng-template #readonlyGroup>
               <p><strong>{{ 'TASK.DETAILS.GROUP' | translate }}:</strong>
-                {{ groupNameById(groupId()) || ('GROUP_LIST.NO_DESCRIPTION' | translate) }}
+                {{ currentGroupNameById(groupId()) || ('GROUP_LIST.NO_DESCRIPTION' | translate) }}
               </p>
             </ng-template>
           </section>

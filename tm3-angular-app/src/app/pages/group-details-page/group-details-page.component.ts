@@ -14,6 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
+import { signal } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -32,32 +33,32 @@ export class GroupDetailsPageComponent implements OnInit {
   private taskService = inject(TaskService);
   private userService = inject(UserService);
 
-  users: User[] = [];
+  users = signal<User[]>([]);
   userColumns = ['id', 'username', 'firstName', 'lastName', 'role'];
 
-  group?: GroupDto;
-  tasks: Task[] = [];
-  loading = false;
+  group = signal<GroupDto | null>(null);
+  loading = signal(false);
+  tasks = signal<Task[]>([]);
   displayedColumns = ['id', 'title', 'type', 'status', 'assignedTo', 'updatedOn'];
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) { this.router.navigateByUrl('/groups'); return; }
-    this.loading = true;
+    this.loading.set(true);
 
     this.groupService.get(id).subscribe({
-      next: g => this.group = g,
+      next: g => this.group.set(g),
       error: () => {},
     });
 
     this.taskService.getTasksByGroup(id).subscribe({
-      next: list => this.tasks = list,
+      next: list => this.tasks.set(list),
       error: () => {},
-      complete: () => this.loading = false
+      complete: () => this.loading.set(false)
     });
 
     this.userService.list({ groupId: id }).subscribe({
-      next: list => this.users = list,
+      next: list => this.users.set(list),
       error: () => {},
     });
 

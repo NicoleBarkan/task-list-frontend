@@ -6,6 +6,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tap, switchMap } from 'rxjs/operators';
 import { Role } from '../../models/role.model';
 import { User } from '../../models/user.model';
+import { getHttpErrorMessage } from '../../utils/http-error.utils';
 
 interface AuthState {
   user: User | null;
@@ -16,20 +17,47 @@ interface AuthState {
 }
 const initial: AuthState = { user:null, roles:[], isLoggedIn:false, loading:false, error:null };
 
+interface LoginResponse { token: string; role?: string | string[]; roles?: string[]; }
+type MeResponse = User & { role?: string | string[]; roles?: string[] };
+
 function normalizeRoles(raw?: Array<string|Role>|string|null): Role[] {
   if (!raw) return [];
   const arr = Array.isArray(raw) ? raw : [raw];
   const known = new Set([Role.ADMIN, Role.MANAGER, Role.USER]);
-  return Array.from(new Set(arr.map(r => String(r).replace(/^ROLE_/i,'').toUpperCase()))).filter(r => known.has(r as Role)) as Role[];
+    const canonical = arr
+    .map(r => String(r).replace(/^ROLE_/i, '').toUpperCase())
+    .filter(r => known.has(r as Role)) as Role[];
+  return Array.from(new Set(canonical));
+}
+
+function readStoredRoles(isBrowser: boolean): Role[] {
+  if (!isBrowser) return [];
+  try {
+    const raw = localStorage.getItem('roles');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as string[];
+    return normalizeRoles(parsed);
+  } catch { return []; }
+}
+
+function writeStoredTokenAndRoles(isBrowser: boolean, token: string, roles: Role[] | string[] | string | null | undefined) {
+  if (!isBrowser) return;
+  localStorage.setItem('token', token);
+  localStorage.setItem('roles', JSON.stringify(Array.isArray(roles) ? roles : roles ? [roles] : []));
+}
+
+function extractRoles(from: { role?: string | string[]; roles?: string[] } | null | undefined, isBrowser: boolean): Role[] {
+  const incoming = from?.roles ?? from?.role ?? readStoredRoles(isBrowser);
+  return normalizeRoles(incoming);
 }
 
 export const AuthStore = signalStore(
   { providedIn:'root' },
   withState<AuthState>(initial),
-  withComputed(s => ({
-    fullName: computed(() => [s.user()?.firstName, s.user()?.lastName].filter(Boolean).join(' ').trim()),
-    username: computed(() => s.user()?.username ?? ''),
-    rolesComputed: computed(() => s.roles()),
+  withComputed(store => ({
+    fullName: computed(() => [store.user()?.firstName, store.user()?.lastName].filter(Boolean).join(' ').trim()),
+    username: computed(() => store.user()?.username ?? ''),
+    rolesComputed: computed(() => store.roles()),
   })),
   withMethods((store, http = inject(HttpClient), platformId = inject(PLATFORM_ID)) => {
     const isBrowser = isPlatformBrowser(platformId);
@@ -39,47 +67,46 @@ export const AuthStore = signalStore(
       patchState(store, { user:null, roles:[], isLoggedIn:false, loading:false, error:null });
     };
 
-    const login = rxMethod<{ username:string; password:string }>(params$ =>
+    const login = rxMethod<{ username: string; password: string }>(params$ =>
       params$.pipe(
-        tap(() => patchState(store, { loading:true, error:null })),
+        tap(() => patchState(store, { loading: true, error: null })),
         switchMap(({ username, password }) =>
-          http.post<any>('/api/auth/login', { username, password }).pipe( 
-            switchMap(res => {
-              if (isBrowser) {
-                localStorage.setItem('token', res.token);
-                localStorage.setItem('roles', JSON.stringify(res.role ?? []));
-              }
-              return http.get<User>('/api/users/me');
-            }),
+          http.post<LoginResponse>('/api/auth/login', { username, password }).pipe(
+            tap(res => writeStoredTokenAndRoles(isBrowser, res.token, res.roles ?? res.role ?? [])),
+            switchMap(() => http.get<MeResponse>('/api/users/me')),
             tap({
               next: (u) => {
-                const roles = normalizeRoles((u as any).role ?? (u as any).roles ?? JSON.parse(localStorage.getItem('roles') || '[]'));
-                patchState(store, { user:u, roles, isLoggedIn:true, loading:false });
+                const roles = extractRoles(u, isBrowser);
+                patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
               },
-              error: (e:any) => patchState(store, { loading:false, error: e?.error?.message ?? 'Login failed' })
+              error: (e: unknown) => {
+                patchState(store, { loading: false, error: getHttpErrorMessage(e, 'Login failed') });
+              }
             })
           )
         )
       )
     );
 
-    const register = rxMethod<{ username:string; password:string; firstName:string; lastName:string }>(params$ =>
+    const register = rxMethod<{ username: string; password: string; firstName: string; lastName: string }>(params$ =>
       params$.pipe(
-        tap(() => patchState(store, { loading:true, error:null })),
-        switchMap(p => http.post<void>('/api/auth/register', p).pipe(
-          switchMap(() => http.post<any>('/api/auth/login', { username:p.username, password:p.password })),
-          switchMap(res => {
-            if (isBrowser) { localStorage.setItem('token', res.token); localStorage.setItem('roles', JSON.stringify(res.role ?? [])); }
-            return http.get<User>('/api/users/me');
-          }),
-          tap({
-            next: (u) => {
-              const roles = normalizeRoles((u as any).role ?? (u as any).roles ?? JSON.parse(localStorage.getItem('roles') || '[]'));
-              patchState(store, { user:u, roles, isLoggedIn:true, loading:false });
-            },
-            error: (e:any) => patchState(store, { loading:false, error: e?.error?.message ?? 'Registration failed' })
-          })
-        ))
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap(p =>
+          http.post<void>('/api/auth/register', p).pipe(
+            switchMap(() => http.post<LoginResponse>('/api/auth/login', { username: p.username, password: p.password })),
+            tap(res => writeStoredTokenAndRoles(isBrowser, res.token, res.roles ?? res.role ?? [])),
+            switchMap(() => http.get<MeResponse>('/api/users/me')),
+            tap({
+              next: (u) => {
+                const roles = extractRoles(u, isBrowser);
+                patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
+              },
+              error: (e: unknown) => {
+                patchState(store, { loading: false, error: getHttpErrorMessage(e, 'Registration failed') });
+              }
+            })
+          )
+        )
       )
     );
 
@@ -89,10 +116,10 @@ export const AuthStore = signalStore(
       if (!isBrowser) return;
       const token = localStorage.getItem('token');
       if (!token) return;
-      http.get<User>('/api/users/me').subscribe({
-        next: u => {
-          const roles = normalizeRoles((u as any).role ?? (u as any).roles ?? JSON.parse(localStorage.getItem('roles') || '[]'));
-          patchState(store, { user:u, roles, isLoggedIn:true, loading:false });
+      http.get<MeResponse>('/api/users/me').subscribe({
+        next: (u) => {
+          const roles = extractRoles(u, isBrowser);
+          patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
         },
         error: () => setLoggedOut()
       });

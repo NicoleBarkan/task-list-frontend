@@ -1,4 +1,3 @@
-// user-list-page.component.ts
 import { Component, inject, effect, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,6 +13,7 @@ import { GroupService } from '../../services/group.service';
 import { UserService } from '../../services/user.service';
 import { GroupDto } from '../../models/group.model';
 import { User } from '../../models/user.model';
+import { getGroupNameById } from '../../utils/display.utils';
 
 @Component({
   selector: 'app-user-list-page',
@@ -47,15 +47,13 @@ export class UserListPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.groupService.list().subscribe({
-      next: gs => this.groups.set(gs),
+      next: groups => this.groups.set(groups),
       error: () => this.groups.set([])
     });
   }
 
   currentGroupName(user: User): string {
-    if (!user.groupId) return '—';
-    const g = this.groups().find(x => x.id === user.groupId);
-    return g?.name ?? `#${user.groupId}`;
+    return getGroupNameById(this.groups(), user.groupId ?? null);
   }
 
   changeGroup(user: User, groupId: number) {
@@ -65,11 +63,8 @@ export class UserListPageComponent implements OnInit {
     user.groupId = groupId;
 
     this.userService.assignGroup(user.id, groupId).subscribe({
-      next: updated => {
-      },
-      error: () => {
-        user.groupId = old;
-      },
+      next: () => {},
+      error: () => { user.groupId = old; },
       complete: () => {
         const s = { ...this.saving() };
         delete s[user.id];

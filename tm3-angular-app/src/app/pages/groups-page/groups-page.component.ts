@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -13,7 +13,10 @@ import { GroupDto } from '../../models/group.model';
 import { GroupEditDialogComponent } from '../group-edit-page/group-edit-dialog.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCardModule } from '@angular/material/card';
-import { RouterModule } from '@angular/router'; 
+import { RouterModule } from '@angular/router';
+import { filter, take, tap } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ViewChild } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -26,69 +29,87 @@ import { RouterModule } from '@angular/router';
     MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule,
     MatDialogModule, MatCardModule, TranslateModule,
-    RouterModule 
+    RouterModule
   ]
 })
-
 export class GroupsPageComponent implements OnInit {
   private service = inject(GroupService);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   displayedColumns = ['id', 'name', 'description', 'actions'];
-  dataSource = new MatTableDataSource<GroupDto>([]);
-  loading = false;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  loading = signal(false);
+  groups = signal<GroupDto[]>([]);
+
+  dataSource = new MatTableDataSource<GroupDto>([]);
+
+  @ViewChild(MatPaginator)
+  set paginator(p: MatPaginator | undefined) {
+    if (p) this.dataSource.paginator = p;
+  }
+
+  @ViewChild(MatSort)
+  set sort(s: MatSort | undefined) {
+    if (s) this.dataSource.sort = s;
+  }
 
   ngOnInit(): void {
+    this.dataSource.filterPredicate = (data, filter) =>
+      (data.name ?? '').toLowerCase().includes(filter) ||
+      (data.description ?? '').toLowerCase().includes(filter);
+
     this.refresh();
   }
 
   applyFilter(value: string) {
     this.dataSource.filter = (value ?? '').trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   refresh() {
-    this.loading = true;
-    this.service.list().subscribe({
-      next: (list) => {
-        this.dataSource = new MatTableDataSource<GroupDto>(list);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.dataSource.filterPredicate = (data, filter) =>
-          (data.name?.toLowerCase().includes(filter) ||
-            (data.description ?? '').toLowerCase().includes(filter));
-      },
-      error: () => {  },
-      complete: () => (this.loading = false),
+    this.loading.set(true);
+    this.service.list().pipe(
+      tap(list => {
+        this.groups.set(list);
+        this.dataSource.data = list; 
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => this.loading.set(false),
+      error: () => this.loading.set(false)
     });
   }
 
   create() {
-    const ref = this.dialog.open(GroupEditDialogComponent, {
+    this.dialog.open(GroupEditDialogComponent, {
       width: 'min(600px, 92vw)',
       maxWidth: '92vw',
-      data: { mode: 'create' }
-    });
-    ref.afterClosed().subscribe(v => { if (v) this.refresh(); });
+      data: { mode: 'create' as const }
+    }).afterClosed().pipe(
+      filter(Boolean),
+      take(1)
+    ).subscribe(() => this.refresh());
   }
 
   edit(row: GroupDto) {
-    const ref = this.dialog.open(GroupEditDialogComponent, {
+    this.dialog.open(GroupEditDialogComponent, {
       width: 'min(600px, 92vw)',
       maxWidth: '92vw',
-      data: { mode: 'edit', group: row }
-    });
-    ref.afterClosed().subscribe(v => { if (v) this.refresh(); });
+      data: { mode: 'edit' as const, group: row }
+    }).afterClosed().pipe(
+      filter(Boolean),
+      take(1)
+    ).subscribe(() => this.refresh());
   }
 
   remove(row: GroupDto) {
     if (!row.id) return;
-    this.service.delete(row.id).subscribe({
+    this.service.delete(row.id).pipe(take(1)).subscribe({
       next: () => this.refresh(),
       error: () => {}
     });
   }
 }
-
