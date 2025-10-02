@@ -44,7 +44,7 @@
               {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
             </p>
             <p class="task-date">
-              {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0600' }}
+              {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
             </p>
             <p class="task-date" *ngIf="task.updatedOn">
               {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}

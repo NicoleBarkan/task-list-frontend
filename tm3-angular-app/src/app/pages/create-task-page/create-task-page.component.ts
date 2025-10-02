@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, Signal, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +11,7 @@ import { User } from '../../models/user.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { UsersStore } from '../../store/users/users.store';
+import { take } from 'rxjs/operators';
 
 import { GroupService } from '../../services/group.service';
 import { GroupDto } from '../../models/group.model';
@@ -19,6 +20,16 @@ import { Role } from '../../models/role.model';
 
 type DialogData = { task?: Task; isEditMode?: boolean };
 type TaskPayload = Omit<Task, 'id'> & { id?: number };
+
+type TaskForm = FormGroup<{
+  title: FormControl<string>;
+  description: FormControl<string>;
+  type: FormControl<Task['type'] | null>;
+  status: FormControl<Task['status'] | null>;
+  assignedTo: FormControl<number | null>;
+  groupId: FormControl<number | null>;
+}>;
+
 
 @Component({
   selector: 'app-create-task-page',
@@ -53,24 +64,24 @@ export class CreateTaskPageComponent implements OnInit {
   );
   groups = signal<GroupDto[]>([]);
 
-  taskForm: FormGroup = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-    description: ['', [Validators.maxLength(200)]],
-    type: ['', Validators.required],
-    status: ['', Validators.required],
-    assignedTo: [null as number | null],
-    groupId: [null as number | null]
+  taskForm: TaskForm = this.fb.group({
+    title: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]),
+    description: this.fb.nonNullable.control('', [Validators.maxLength(200)]),
+    type: this.fb.control<Task['type'] | null>(null, { validators: Validators.required }),
+    status: this.fb.control<Task['status'] | null>(null, { validators: Validators.required }),
+    assignedTo: this.fb.control<number | null>(null),
+    groupId: this.fb.control<number | null>(null)
   });
-
   trackById = (_: number, u: { id: number }) => u.id;
 
   ngOnInit() {
     this.task.set(this.data?.task ?? null);
     this.isEditMode.set(this.data?.isEditMode ?? false);
 
-    if (this.isAdminOrManager()) {
-      this.taskForm.get('groupId')!.addValidators(Validators.required);
-      this.taskForm.get('groupId')!.updateValueAndValidity({ emitEvent: false });
+    const groupCtrl = this.groupIdCtrl;
+    if (this.isAdminOrManager() && groupCtrl) {
+      groupCtrl.addValidators(Validators.required);
+      groupCtrl.updateValueAndValidity({ emitEvent: false });
     }
 
     const currentTask = this.task();
@@ -88,7 +99,7 @@ export class CreateTaskPageComponent implements OnInit {
     this.usersStore.loadUsers();
 
     if (this.isAdminOrManager()) {
-      this.groupService.list().subscribe({
+      this.groupService.list().pipe(take(1)).subscribe({
         next: list => this.groups.set(list),
         error: () => this.groups.set([])
       });
@@ -108,27 +119,27 @@ export class CreateTaskPageComponent implements OnInit {
     const effectiveGroupId =
       this.isAdminOrManager() ? formValue.groupId : this.authStore.user()?.groupId;
 
-    if (effectiveGroupId == null) {
-      this.taskForm.get('groupId')?.setErrors({ required: true });
+    if (this.isAdminOrManager() && (effectiveGroupId == null)) {
+      this.groupIdCtrl?.setErrors({ required: true });
       this.taskForm.markAllAsTouched();
       return;
     }
 
-    const result: TaskPayload = {
-      ...(existing?.id ? { id: existing.id } : {}),
+    const base = {
       title: String(formValue.title),
       description: formValue.description ?? '',
       type: formValue.type as Task['type'],
       status: formValue.status as Task['status'],
-      assignedTo: (formValue.assignedTo ?? null) as number | null,
-      createdOn: existing?.createdOn ?? nowISO,
-      updatedOn: this.isEditMode() ? nowISO : undefined,
-      groupId: effectiveGroupId 
+      assignedTo: formValue.assignedTo ?? null
     };
 
-    this.dialogRef.close(result);
-  }
-
+    const result: any = {
+      ...(existing?.id ? { id: existing.id } : {}),
+      ...base,
+      ...(this.isAdminOrManager() ? { group: { id: effectiveGroupId } } : {})
+    };
+      this.dialogRef.close(result);
+    }
 
   onCancel() {
     this.dialogRef.close();
