@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal, computed } from '@angular/core';
+import { Component, OnInit, inject, Signal, computed, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Task } from '../../models/task.model';
 import { User } from '../../models/user.model';
@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core'; 
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -17,6 +18,10 @@ import * as TasksActions from '../../store/tasks/tasks.actions';
 import { selectSelectedTask } from '../../store/tasks/tasks.reducer';
 import { UsersStore } from '../../store/users/users.store';
 import { AuthStore } from '../../store/auth/auth.store';
+
+import { GroupService } from '../../services/group.service';
+import { GroupDto } from '../../models/group.model';
+import { getGroupNameById } from '../../utils/display.utils';
 
 @Component({
   selector: 'app-task-details-page',
@@ -29,6 +34,7 @@ import { AuthStore } from '../../store/auth/auth.store';
     MatDividerModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatOptionModule,            
     FormsModule,
     TranslateModule
   ],
@@ -40,11 +46,15 @@ export class TaskDetailsPageComponent implements OnInit {
   private store = inject(Store);
   private usersStore = inject(UsersStore);
   private authStore = inject(AuthStore);
+  private groupsService = inject(GroupService);             
 
   task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
   users: Signal<ReadonlyArray<User>> = this.usersStore.users;
 
   assignedToId = computed(() => this.task()?.assignedTo ?? null);
+
+  groups = signal<GroupDto[]>([]);                                 
+  groupId = computed(() => this.task()?.groupId ?? null);  
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -52,6 +62,13 @@ export class TaskDetailsPageComponent implements OnInit {
       this.store.dispatch(TasksActions.loadTaskById({ id }));
     }
     this.usersStore.loadUsers();
+
+    if (this.isAdminOrManager()) {
+      this.groupsService.list().subscribe({
+        next: groups => this.groups.set(groups),
+        error: () => this.groups.set([])
+      });
+    }
   }
 
   onAssignedToChange(newUserId: number | null) {
@@ -61,8 +78,15 @@ export class TaskDetailsPageComponent implements OnInit {
     this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
   }
 
-  canAssign(): boolean {
-    return this.authStore.user()?.role?.includes(Role.MANAGER) ?? false;
+  onGroupChange(newGroupId: number | null) {
+    const task = this.task();
+    if (!task || newGroupId == null) return;
+    const updated: Partial<Task> = { groupId: newGroupId };
+    this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
+  }
+
+  isAdminOrManager(): boolean {
+    return this.authStore.hasRole(Role.MANAGER) || this.authStore.hasRole(Role.ADMIN);
   }
 
   get assignedUserName(): string {
@@ -70,6 +94,10 @@ export class TaskDetailsPageComponent implements OnInit {
     if (!currentId) return 'Unassigned';
     const user = this.users().find((u) => u.id === currentId);
     return user ? `${user.firstName} ${user.lastName}` : 'Unassigned';
+  }
+
+  currentGroupNameById(id: number | null): string {
+    return getGroupNameById(this.groups(), id);
   }
 
   trackById = (_: number, u: User) => u.id;

@@ -72,7 +72,7 @@ export class TaskListPageComponent implements OnInit {
   }
 
   isAdmin(): boolean {
-    return this.authStore.user()?.role?.includes(Role.ADMIN) ?? false;
+    return this.authStore.hasRole(Role.ADMIN);
   }
 
   trackById = (_: number, task: Task) => task.id;

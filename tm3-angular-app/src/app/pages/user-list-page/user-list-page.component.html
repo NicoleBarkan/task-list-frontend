@@ -12,14 +12,33 @@
     @for (user of users(); track user.id) {
       <mat-card>
         <mat-card-header>
-          <div class="user-avatar">
-            {{ user.username.charAt(0).toUpperCase() }}
-          </div>
+          <div class="user-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
           <div class="user-info">
             <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
             <div class="user-username">{{ '@' + user.username }}</div>
           </div>
         </mat-card-header>
+
+        <div class="user-group-row">
+          <div class="group-label">
+            {{ 'USER_LIST.CURRENT_GROUP' | translate }}:
+            <strong>{{ currentGroupName(user) }}</strong>
+          </div>
+        </div>
+
+        <div class="user-assign-row">
+          <mat-form-field appearance="outline" class="group-select">
+            <mat-label>{{ 'USER_LIST.CHANGE_GROUP' | translate }}</mat-label>
+            <mat-select
+              [value]="user.groupId"
+              (selectionChange)="changeGroup(user, $event.value)"
+              [disabled]="saving()[user.id] || loading()">
+              @for (g of groups(); track g.id) {
+                <mat-option [value]="g.id">{{ g.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <mat-card-actions>
           <button mat-stroked-button color="primary" [routerLink]="['/users', user.id]">

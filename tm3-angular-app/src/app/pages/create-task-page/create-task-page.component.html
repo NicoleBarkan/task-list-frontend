@@ -1,19 +1,19 @@
 <div class="task-form-wrapper">
   <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" novalidate>
-    <h2 class="form-title">{{ isEditMode ? ('CREATE.FORM.UPDATE' | translate) : ('CREATE.FORM.CREATE' | translate) }}</h2>
+    <h2 class="form-title">{{ isEditMode() ? ('CREATE.FORM.UPDATE' | translate) : ('CREATE.FORM.CREATE' | translate) }}</h2>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'CREATE.FORM.TITLE_LABEL' | translate }}</mat-label>
       <input matInput formControlName="title" [placeholder]="'CREATE.FORM.TITLE_PLACEHOLDER' | translate" />
-      <mat-error *ngIf="title?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TITLE_REQUIRED' | translate }}</mat-error>
-      <mat-error *ngIf="title?.hasError('minlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MINLENGTH' | translate }}</mat-error>
-      <mat-error *ngIf="title?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MAXLENGTH' | translate }}</mat-error>
+      <mat-error *ngIf="titleCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TITLE_REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="titleCtrl?.hasError('minlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MINLENGTH' | translate }}</mat-error>
+      <mat-error *ngIf="titleCtrl?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.TITLE_MAXLENGTH' | translate }}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'CREATE.FORM.DESCRIPTION_LABEL' | translate }}</mat-label>
       <textarea matInput formControlName="description" rows="4" [placeholder]="'CREATE.FORM.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
-      <mat-error *ngIf="description?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.DESCRIPTION_MAXLENGTH' | translate }}</mat-error>
+      <mat-error *ngIf="descriptionCtrl?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.DESCRIPTION_MAXLENGTH' | translate }}</mat-error>
     </mat-form-field>
     
     <mat-form-field appearance="outline" class="full-width">
@@ -28,6 +28,14 @@
       </ng-container>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width" *ngIf="isAdminOrManager()">
+      <mat-label>{{ 'CREATE.FORM.GROUP' | translate }}</mat-label>
+      <mat-select formControlName="groupId" required>
+        <mat-option *ngFor="let g of groups()" [value]="g.id">{{ g.name }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="groupIdCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.GROUP_REQUIRED' | translate }}</mat-error>
+    </mat-form-field>
+
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>{{ 'CREATE.FORM.TYPE' | translate }}</mat-label>
@@ -38,7 +46,7 @@
           <mat-option value="SUBTASK">Subtask</mat-option>
           <mat-option value="BUG">Bug</mat-option>
         </mat-select>
-        <mat-error *ngIf="type?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TYPE_REQUIRED' | translate }}</mat-error>
+        <mat-error *ngIf="typeCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TYPE_REQUIRED' | translate }}</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
@@ -48,7 +56,7 @@
           <mat-option value="IN_PROGRESS">In Progress</mat-option>
           <mat-option value="DONE">Done</mat-option>
         </mat-select>
-        <mat-error *ngIf="status?.hasError('required')">{{ 'CREATE.FORM.ERRORS.STATUS_REQUIRED' | translate }}</mat-error>
+        <mat-error *ngIf="statusCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.STATUS_REQUIRED' | translate }}</mat-error>
       </mat-form-field>
     </div>
 
@@ -57,7 +65,7 @@
         {{ 'CREATE.FORM.CANCEL' | translate }}
       </button>
       <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
-        {{ isEditMode ? ('CREATE.FORM.SAVE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
+        {{ isEditMode() ? ('CREATE.FORM.SAVE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
       </button>
     </div>
   </form>

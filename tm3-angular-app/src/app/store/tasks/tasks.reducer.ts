@@ -21,30 +21,30 @@ export const tasksFeature = createFeature({
   reducer: createReducer(
     initialState,
 
-    on(TasksActions.loadTasks, (s: TasksState): TasksState => ({ ...s, loading: true, error: null })),
-    on(TasksActions.loadTasksSuccess, (s: TasksState, { tasks }: { tasks: Task[] }): TasksState => ({ ...s, list: tasks, loading: false })),
-    on(TasksActions.loadTasksFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, loading: false, error })),
+    on(TasksActions.loadTasks, (state): TasksState => ({ ...state, loading: true, error: null })),
+    on(TasksActions.loadTasksSuccess, (state: TasksState, { tasks }: { tasks: Task[] }): TasksState => ({ ...state, list: tasks, loading: false })),
+    on(TasksActions.loadTasksFailure, (state: TasksState, { error }: { error: string }): TasksState => ({ ...state, loading: false, error })),
 
-    on(TasksActions.loadTaskById, (s: TasksState, _payload: { id: number }): TasksState => ({ ...s, loading: true, error: null, selectedTask: null })),
-    on(TasksActions.loadTaskByIdSuccess, (s: TasksState, { task }: { task: Task | null }): TasksState => ({ ...s, selectedTask: task, loading: false })),
-    on(TasksActions.loadTaskByIdFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, loading: false, error })),
+    on(TasksActions.loadTaskById, (state): TasksState => ({ ...state, loading: true, error: null, selectedTask: null })),
+    on(TasksActions.loadTaskByIdSuccess, (state, { task }): TasksState => ({ ...state, selectedTask: task, loading: false })),
+    on(TasksActions.loadTaskByIdFailure, (state: TasksState, { error }: { error: string }): TasksState => ({ ...state, loading: false, error })),
 
-    on(TasksActions.addTaskSuccess, (s: TasksState, { task }: { task: Task }): TasksState => ({ ...s, list: [task, ...s.list] })),
-    on(TasksActions.addTaskFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, error })),
+    on(TasksActions.addTaskSuccess, (state: TasksState, { task }: { task: Task }): TasksState => ({ ...state, list: [task, ...state.list] })),
+    on(TasksActions.addTaskFailure, (state: TasksState, { error }: { error: string }): TasksState => ({ ...state, error })),
 
-    on(TasksActions.updateTaskSuccess, (s: TasksState, { task }: { task: Task }): TasksState => ({
-      ...s,
-      list: s.list.map(t => (t.id === task.id ? task : t)),
-      selectedTask: s.selectedTask && s.selectedTask.id === task.id ? task : s.selectedTask,
+    on(TasksActions.updateTaskSuccess, (state: TasksState, { task }: { task: Task }): TasksState => ({
+      ...state,
+      list: state.list.map(t => (t.id === task.id ? task : t)),
+      selectedTask: state.selectedTask && state.selectedTask.id === task.id ? task : state.selectedTask,
     })),
-    on(TasksActions.updateTaskFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, error })),
+    on(TasksActions.updateTaskFailure, (state: TasksState, { error }: { error: string }): TasksState => ({ ...state, error })),
 
-    on(TasksActions.deleteTaskSuccess, (s: TasksState, { id }: { id: number }): TasksState => ({
-      ...s,
-      list: s.list.filter(t => t.id !== id),
-      selectedTask: s.selectedTask && s.selectedTask.id === id ? null : s.selectedTask,
+    on(TasksActions.deleteTaskSuccess, (state: TasksState, { id }: { id: number }): TasksState => ({
+      ...state,
+      list: state.list.filter(t => t.id !== id),
+      selectedTask: state.selectedTask && state.selectedTask.id === id ? null : state.selectedTask,
     })),
-    on(TasksActions.deleteTaskFailure, (s: TasksState, { error }: { error: string }): TasksState => ({ ...s, error }))
+    on(TasksActions.deleteTaskFailure, (state: TasksState, { error }: { error: string }): TasksState => ({ ...state, error }))
   ),
 });
 

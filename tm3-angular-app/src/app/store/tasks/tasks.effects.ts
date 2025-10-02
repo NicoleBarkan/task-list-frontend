@@ -55,7 +55,7 @@ export class TasksEffects {
   update$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TasksActions.updateTask),
-      switchMap(({ id, updatedTask }) =>
+      switchMap(({ id, updatedTask }) => 
         this.taskService.updateTask(id, updatedTask).pipe(
           map((saved: Task) => TasksActions.updateTaskSuccess({ task: saved })),
           catchError(err =>

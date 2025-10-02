@@ -13,7 +13,7 @@ export const addTask = createAction('[Tasks] Add', props<{ task: Task }>());
 export const addTaskSuccess = createAction('[Tasks] Add Success', props<{ task: Task }>());
 export const addTaskFailure = createAction('[Tasks] Add Failure', props<{ error: string }>());
 
-export const updateTask = createAction('[Tasks] Update', props<{ id: number; updatedTask: Task }>());
+export const updateTask = createAction('[Tasks] Update', props<{ id: number; updatedTask: Partial<Task> }>());
 export const updateTaskSuccess = createAction('[Tasks] Update Success', props<{ task: Task }>());
 export const updateTaskFailure = createAction('[Tasks] Update Failure', props<{ error: string }>());
 

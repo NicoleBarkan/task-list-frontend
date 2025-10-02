@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, Signal } from '@angular/core';
+import { Component, OnInit, inject, Signal, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,8 +11,28 @@ import { User } from '../../models/user.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { UsersStore } from '../../store/users/users.store';
+import { take } from 'rxjs/operators';
 
-type newTask = Omit<Task, 'id'> & { id?: number };
+import { GroupService } from '../../services/group.service';
+import { GroupDto } from '../../models/group.model';
+import { AuthStore } from '../../store/auth/auth.store';
+import { Role } from '../../models/role.model';
+
+type DialogData = { task?: Task; isEditMode?: boolean };
+type TaskPayload = Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> & {
+  id?: number;
+  group?: { id: number };
+};
+
+type TaskForm = FormGroup<{
+  title: FormControl<string>;
+  description: FormControl<string>;
+  type: FormControl<Task['type'] | null>;
+  status: FormControl<Task['status'] | null>;
+  assignedTo: FormControl<number | null>;
+  groupId: FormControl<number | null>;
+}>;
+
 
 @Component({
   selector: 'app-create-task-page',
@@ -31,71 +51,105 @@ type newTask = Omit<Task, 'id'> & { id?: number };
   styleUrls: ['./create-task-page.component.scss']
 })
 export class CreateTaskPageComponent implements OnInit {
-  task?: Task;
-  isEditMode = false;
-
   private usersStore = inject(UsersStore);
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CreateTaskPageComponent>);
-  data = inject(MAT_DIALOG_DATA) as { task?: Task; isEditMode?: boolean };
+  private groupService = inject(GroupService);
+  private authStore = inject(AuthStore);
+  private data = inject(MAT_DIALOG_DATA) as DialogData;
 
   users: Signal<ReadonlyArray<User>> = this.usersStore.users;
 
-  taskForm!: FormGroup;
+  task = signal<Task | null>(null);
+  isEditMode = signal(false);
+  isAdminOrManager = computed(
+    () => this.authStore.hasRole(Role.ADMIN) || this.authStore.hasRole(Role.MANAGER)
+  );
+  groups = signal<GroupDto[]>([]);
 
+  taskForm: TaskForm = this.fb.group({
+    title: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]),
+    description: this.fb.nonNullable.control('', [Validators.maxLength(200)]),
+    type: this.fb.control<Task['type'] | null>(null, { validators: Validators.required }),
+    status: this.fb.control<Task['status'] | null>(null, { validators: Validators.required }),
+    assignedTo: this.fb.control<number | null>(null),
+    groupId: this.fb.control<number | null>(null)
+  });
   trackById = (_: number, u: { id: number }) => u.id;
 
   ngOnInit() {
-    this.task = this.data?.task;
-    this.isEditMode = this.data?.isEditMode ?? false;
+    this.task.set(this.data?.task ?? null);
+    this.isEditMode.set(this.data?.isEditMode ?? false);
 
-    this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-      description: ['', [Validators.maxLength(200)]],
-      type: ['', Validators.required],
-      status: ['', Validators.required],
-      assignedTo: [null],
-    });
+    const groupCtrl = this.groupIdCtrl;
+    if (this.isAdminOrManager() && groupCtrl) {
+      groupCtrl.addValidators(Validators.required);
+      groupCtrl.updateValueAndValidity({ emitEvent: false });
+    }
 
-    if (this.task) {
-      this.taskForm.patchValue(this.task);
+    const currentTask = this.task();
+    if (currentTask) {
+      this.taskForm.patchValue({
+        title: currentTask.title,
+        description: currentTask.description ?? '',
+        type: currentTask.type,
+        status: currentTask.status,
+        assignedTo: currentTask.assignedTo ?? null,
+        groupId: currentTask.groupId  
+      }, { emitEvent: false });
     }
 
     this.usersStore.loadUsers();
+
+    if (this.isAdminOrManager()) {
+      this.groupService.list().pipe(take(1)).subscribe({
+        next: list => this.groups.set(list),
+        error: () => this.groups.set([])
+      });
+    }
   }
 
   onSubmit() {
-    if (this.taskForm.valid) {
-      const nowISO = new Date().toISOString();
-      const newTask: newTask = {
-        ...this.taskForm.value,
-        createdOn: this.task?.createdOn || nowISO,
-        updatedOn: this.isEditMode ? nowISO : undefined,
-        id: this.task?.id
-      };
-      this.dialogRef.close(newTask);
-    } else {
+    if (this.taskForm.invalid) {
       this.taskForm.markAllAsTouched();
+      return;
     }
-  }
+
+    const formValue = this.taskForm.getRawValue();
+    const existing = this.task();
+
+    const effectiveGroupId =
+      this.isAdminOrManager() ? formValue.groupId : this.authStore.user()?.groupId;
+
+    if (this.isAdminOrManager() && (effectiveGroupId == null)) {
+      this.groupIdCtrl?.setErrors({ required: true });
+      this.taskForm.markAllAsTouched();
+      return;
+    }
+
+    const base: Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> = {
+      title: String(formValue.title),
+      description: formValue.description ?? '',
+      type: formValue.type as Task['type'],
+      status: formValue.status as Task['status'],
+      assignedTo: formValue.assignedTo ?? null
+    };
+
+    const result: TaskPayload = {
+      ...(existing?.id ? { id: existing.id } : {}),
+      ...base,
+      ...(this.isAdminOrManager() ? { group: { id: effectiveGroupId as number } } : {})
+    };
+      this.dialogRef.close(result);
+    }
 
   onCancel() {
     this.dialogRef.close();
   }
 
-  get title() {
-    return this.taskForm.get('title');
-  }
-
-  get description() {
-    return this.taskForm.get('description');
-  }
-
-  get type() {
-    return this.taskForm.get('type');
-  }
-
-  get status() {
-    return this.taskForm.get('status');
-  }
+  get titleCtrl() { return this.taskForm.get('title'); }
+  get descriptionCtrl() { return this.taskForm.get('description'); }
+  get typeCtrl() { return this.taskForm.get('type'); }
+  get statusCtrl() { return this.taskForm.get('status'); }
+  get groupIdCtrl() { return this.taskForm.get('groupId'); }
 }

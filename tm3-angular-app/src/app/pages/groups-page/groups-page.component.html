@@ -1,0 +1,51 @@
+<div class="group-list-wrapper">
+  <div class="group-list-header">
+    <h2>{{ 'GROUP_LIST.TITLE' | translate }}</h2>
+
+    <div class="actions">
+      <button mat-stroked-button color="accent" routerLink="/tasks">
+        ← {{ 'USER_LIST.BACK_TO_TASKS' | translate }}
+      </button>
+      <button mat-stroked-button color="primary" (click)="create()">
+        + {{ 'GROUP_LIST.CREATE' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="filter">
+      <mat-label>{{ 'GROUP_LIST.FILTER' | translate }}</mat-label>
+      <input matInput #filter (keyup)="applyFilter(filter.value)" [placeholder]="'GROUP_LIST.SEARCH_PLACEHOLDER' | translate" />
+      <button mat-icon-button matSuffix (click)="filter.value=''; applyFilter('')">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="group-list-content">
+    @for (g of dataSource.data; track g.id) {
+      <mat-card class="group-card">
+        <mat-card-header>
+          <div class="group-avatar"> {{ g.name ? g.name.charAt(0).toUpperCase() : '?' }} </div>
+          <div class="group-info">
+            <a class="group-name linklike" [routerLink]="['/groups', g.id]" [title]="g.name || ''">
+              {{ g.name }}
+            </a>
+            <div class="group-desc" [title]="g.description || ''">
+              {{ g.description || ('GROUP_LIST.NO_DESCRIPTION' | translate) }}
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-actions>
+          <button mat-stroked-button color="primary" (click)="edit(g)">
+            {{ 'GROUP_LIST.EDIT' | translate }}
+          </button>
+          <button mat-stroked-button color="warn" (click)="remove(g)">
+            {{ 'GROUP_LIST.DELETE' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+</div>

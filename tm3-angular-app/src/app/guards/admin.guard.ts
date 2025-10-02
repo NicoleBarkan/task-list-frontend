@@ -1,5 +1,5 @@
-import { inject, Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthStore } from '../store/auth/auth.store';
 import { Role } from '../models/role.model';
 
@@ -8,15 +8,13 @@ export class AdminGuard implements CanActivate {
   private auth = inject(AuthStore);
   private router = inject(Router);
 
-  canActivate(): boolean {
-    const isLoggedIn = this.auth.isLoggedIn();
-    const role = this.auth.role();
+  canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    const loggedIn = this.auth.isLoggedIn();      
+    const isAdmin  = this.auth.hasRole(Role.ADMIN)    
 
-    if (!isLoggedIn || !role || !role.includes(Role.ADMIN)) {
-      this.router.navigate(['/login']);
-      return false;
+    if (!loggedIn || !isAdmin) {
+      return this.router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
     }
-
     return true;
   }
 }

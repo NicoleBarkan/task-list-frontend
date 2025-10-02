@@ -9,6 +9,8 @@ import { UserListPageComponent } from './pages/user-list-page/user-list-page.com
 import { UserDetailsPageComponent } from './pages/user-details-page/user-details-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { GroupsPageComponent } from './pages/groups-page/groups-page.component';
+import { GroupDetailsPageComponent } from './pages/group-details-page/group-details-page.component';
 
 
 export const routes: Routes = [
@@ -20,5 +22,7 @@ export const routes: Routes = [
   { path: 'details/:id', component: TaskDetailsPageComponent, canActivate: [AuthGuard] },
   { path: 'edit/:id', component: EditTaskPageComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UserListPageComponent, canActivate: [AdminGuard] },
-  { path: 'users/:id', component: UserDetailsPageComponent, canActivate: [AdminGuard] }
+  { path: 'users/:id', component: UserDetailsPageComponent, canActivate: [AdminGuard] },
+  { path: 'groups', component: GroupsPageComponent, canActivate: [AdminGuard] },
+  { path: 'groups/:id', component: GroupDetailsPageComponent, canActivate: [AdminGuard] },
 ];
