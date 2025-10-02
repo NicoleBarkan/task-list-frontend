@@ -19,7 +19,10 @@ import { AuthStore } from '../../store/auth/auth.store';
 import { Role } from '../../models/role.model';
 
 type DialogData = { task?: Task; isEditMode?: boolean };
-type TaskPayload = Omit<Task, 'id'> & { id?: number };
+type TaskPayload = Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> & {
+  id?: number;
+  group?: { id: number };
+};
 
 type TaskForm = FormGroup<{
   title: FormControl<string>;
@@ -113,7 +116,6 @@ export class CreateTaskPageComponent implements OnInit {
     }
 
     const formValue = this.taskForm.getRawValue();
-    const nowISO = new Date().toISOString();
     const existing = this.task();
 
     const effectiveGroupId =
@@ -125,7 +127,7 @@ export class CreateTaskPageComponent implements OnInit {
       return;
     }
 
-    const base = {
+    const base: Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> = {
       title: String(formValue.title),
       description: formValue.description ?? '',
       type: formValue.type as Task['type'],
@@ -133,10 +135,10 @@ export class CreateTaskPageComponent implements OnInit {
       assignedTo: formValue.assignedTo ?? null
     };
 
-    const result: any = {
+    const result: TaskPayload = {
       ...(existing?.id ? { id: existing.id } : {}),
       ...base,
-      ...(this.isAdminOrManager() ? { group: { id: effectiveGroupId } } : {})
+      ...(this.isAdminOrManager() ? { group: { id: effectiveGroupId as number } } : {})
     };
       this.dialogRef.close(result);
     }
