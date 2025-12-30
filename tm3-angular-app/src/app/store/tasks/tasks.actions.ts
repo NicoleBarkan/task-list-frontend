@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Task } from '../../models/task.model';
+import { TaskCreateDto } from '../../models/TaskCreateDto';
 
 export const loadTasks = createAction('[Tasks] Load');
 export const loadTasksSuccess = createAction('[Tasks] Load Success', props<{ tasks: Task[] }>());
@@ -9,7 +10,7 @@ export const loadTaskById = createAction('[Tasks] Load By Id', props<{ id: numbe
 export const loadTaskByIdSuccess = createAction('[Tasks] Load By Id Success', props<{ task: Task | null }>());
 export const loadTaskByIdFailure = createAction('[Tasks] Load By Id Failure', props<{ error: string }>());
 
-export const addTask = createAction('[Tasks] Add', props<{ task: Task }>());
+export const addTask = createAction('[Tasks] Add', props<{ task: TaskCreateDto }>());
 export const addTaskSuccess = createAction('[Tasks] Add Success', props<{ task: Task }>());
 export const addTaskFailure = createAction('[Tasks] Add Failure', props<{ error: string }>());
 

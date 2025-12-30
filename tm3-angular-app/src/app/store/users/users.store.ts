@@ -1,11 +1,12 @@
 import { inject, computed } from '@angular/core';
-import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
+import { signalStore, withState, withMethods, withComputed, patchState, withHooks } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap } from 'rxjs';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { Role } from '../../models/role.model';
-import { withHooks } from '@ngrx/signals';
+import { Store } from '@ngrx/store';
+import * as TasksActions from '../tasks/tasks.actions';
 
 interface UsersState {
   list: User[];
@@ -30,7 +31,7 @@ export const UsersStore = signalStore(
     loading: computed(() => s.loading()),
     error: computed(() => s.error()),
   })),
-  withMethods((store, userService = inject(UserService)) => {
+  withMethods((store, userService = inject(UserService), ngrxStore = inject(Store)) => {
     const loadUsers = rxMethod<void>(
       pipe(
         switchMap(() => {
@@ -94,11 +95,38 @@ export const UsersStore = signalStore(
       )
     );
 
-    return { loadUsers, loadUserById, updateUserRole };
+    const assignGroup = rxMethod<{ id: number; groupId: number }>(
+        pipe(
+          switchMap(({ id, groupId }) => {
+            patchState(store, { loading: true, error: null });
+
+            return userService.assignGroup(id, groupId).pipe(
+              tap({
+                next: (user: User) => {
+                  patchState(store, {
+                    list: store.list().map(u => (u.id === user.id ? user : u)),
+                    selectedUser: store.selectedUser()?.id === user.id ? user : store.selectedUser(),
+                    loading: false,
+                  });
+
+                  ngrxStore.dispatch(TasksActions.loadTasks());
+                },
+                error: (e: any) =>
+                  patchState(store, {
+                    loading: false,
+                    error: e?.error?.message ?? 'Failed to assign group',
+                  }),
+              })
+            );
+          })
+        )
+      );
+
+    return { loadUsers, loadUserById, updateUserRole, assignGroup };
   }),
   withHooks({
     onInit(store) {
-      store.loadUsers(); 
+      store.loadUsers();
     },
   })
 );

@@ -1,5 +1,5 @@
 export interface GroupDto {
   id?: number;
-  name: string;
+  title: string;
   description?: string | null;
 }

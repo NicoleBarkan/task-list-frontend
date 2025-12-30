@@ -38,14 +38,17 @@ export class LoginPageComponent {
   loginAttempted = signal(false);
 
   constructor() {
-  effect(() => {
-    const err = this.errorMessage();
-    if (err) console.warn('Login error:', err);
-    if (this.auth.user()) {
-      this.router.navigate(['/tasks']);
-    }
-  });
-}
+    effect(() => {
+      const err = this.errorMessage();
+      if (err) console.warn('Login error:', err);
+
+      if (this.auth.user()) {
+        this.router.navigate(['/tasks']).then(() => {
+          window.dispatchEvent(new Event('auth-changed'));
+        });
+      }
+    });
+  }
 
   onSubmit() {
     this.loginAttempted.set(true);

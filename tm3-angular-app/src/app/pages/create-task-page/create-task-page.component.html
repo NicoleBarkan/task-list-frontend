@@ -1,8 +1,9 @@
 <div class="task-form-wrapper">
   <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" novalidate>
-    <h2 class="form-title">{{ isEditMode() ? ('CREATE.FORM.UPDATE' | translate) : ('CREATE.FORM.CREATE' | translate) }}</h2>
-
-    <mat-form-field appearance="outline" class="full-width">
+    <h2 class="form-title">
+      {{ data.mode === 'edit' ? ('CREATE.FORM.UPDATE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
+    </h2>
+    <mat-form-field appearance="outline" class="full-width-title">
       <mat-label>{{ 'CREATE.FORM.TITLE_LABEL' | translate }}</mat-label>
       <input matInput formControlName="title" [placeholder]="'CREATE.FORM.TITLE_PLACEHOLDER' | translate" />
       <mat-error *ngIf="titleCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.TITLE_REQUIRED' | translate }}</mat-error>
@@ -15,7 +16,7 @@
       <textarea matInput formControlName="description" rows="4" [placeholder]="'CREATE.FORM.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
       <mat-error *ngIf="descriptionCtrl?.hasError('maxlength')">{{ 'CREATE.FORM.ERRORS.DESCRIPTION_MAXLENGTH' | translate }}</mat-error>
     </mat-form-field>
-    
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'CREATE.FORM.ASSIGNED_TO' | translate }}</mat-label>
       <ng-container *ngIf="users() as userList">
@@ -31,7 +32,7 @@
     <mat-form-field appearance="outline" class="full-width" *ngIf="isAdminOrManager()">
       <mat-label>{{ 'CREATE.FORM.GROUP' | translate }}</mat-label>
       <mat-select formControlName="groupId" required>
-        <mat-option *ngFor="let g of groups()" [value]="g.id">{{ g.name }}</mat-option>
+        <mat-option *ngFor="let g of visibleGroups()" [value]="g.id">{{ g.title }}</mat-option>
       </mat-select>
       <mat-error *ngIf="groupIdCtrl?.hasError('required')">{{ 'CREATE.FORM.ERRORS.GROUP_REQUIRED' | translate }}</mat-error>
     </mat-form-field>
@@ -65,7 +66,7 @@
         {{ 'CREATE.FORM.CANCEL' | translate }}
       </button>
       <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
-        {{ isEditMode() ? ('CREATE.FORM.SAVE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
+        {{ data.mode === 'edit' ? ('CREATE.FORM.SAVE' | translate) : ('CREATE.FORM.CREATE' | translate) }}
       </button>
     </div>
   </form>

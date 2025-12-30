@@ -1,44 +1,46 @@
+<!-- user-details-page.component.html -->
 <div class="user-details-wrapper">
   @if (user(); as u) {
-    <mat-card class="user-card">
-      <mat-card-header>
-        <mat-card-title>{{ u.firstName }} {{ u.lastName }}</mat-card-title>
-        <mat-card-subtitle>{{ u.username }}</mat-card-subtitle>
-      </mat-card-header>
+  <mat-card class="user-card">
+    <mat-card-header>
+      <mat-card-title>{{ u.firstName }} {{ u.lastName }}</mat-card-title>
+      <mat-card-subtitle>{{ u.username }}</mat-card-subtitle>
+    </mat-card-header>
 
-      <mat-card-content>
-        <section class="section">
-          <h3>{{ 'USER_DETAILS.ROLES' | translate }}</h3>
-          @for (role of roleOptions; track role.name) {
-            <mat-checkbox
-              [(ngModel)]="role.checked"
-              [disabled]="role.disabled"
-            >
-              {{ role.label }}
-            </mat-checkbox>
-          }
-        </section>
-      </mat-card-content>
+    <mat-card-content>
+      <section class="section">
+        <h3>{{ 'USER_DETAILS.ROLES' | translate }}</h3>
 
-      <mat-card-actions>
-        <button mat-stroked-button color="primary" routerLink="/users">
-          ← {{ 'USER_DETAILS.BACK' | translate }}
-        </button>
-        <button mat-flat-button color="accent" (click)="saveRole()" [disabled]="!canSave">
-          {{ 'USER_DETAILS.SAVE' | translate }}
-        </button>
-      </mat-card-actions>
-    </mat-card>
+        @for (role of roleOptions; track role.name) {
+        <mat-checkbox [(ngModel)]="role.checked" [disabled]="role.disabled">
+          {{ role.label }}
+        </mat-checkbox>
+        }
+      </section>
+    </mat-card-content>
+
+    <!-- left: Back | right: Save -->
+    <mat-card-actions class="actions">
+      <button mat-stroked-button color="primary" routerLink="/users">
+        ← {{ 'USER_DETAILS.BACK' | translate }}
+      </button>
+
+      <button mat-flat-button color="primary" (click)="saveRole()" [disabled]="!canSave">
+        {{ 'USER_DETAILS.SAVE' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
   } @else {
-    <mat-card class="user-card">
-      <mat-card-content>
-        <p>{{ 'USER_DETAILS.NOT_FOUND' | translate }}</p>
-        <mat-card-actions>
-          <button mat-stroked-button color="primary" routerLink="/users">
-            ← {{ 'USER_DETAILS.BACK' | translate }}
-          </button>
-        </mat-card-actions>
-      </mat-card-content>
-    </mat-card>
+  <mat-card class="user-card">
+    <mat-card-content>
+      <p class="not-found">{{ 'USER_DETAILS.NOT_FOUND' | translate }}</p>
+    </mat-card-content>
+
+    <mat-card-actions class="actions">
+      <button mat-stroked-button color="primary" routerLink="/users">
+        ← {{ 'USER_DETAILS.BACK' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
   }
 </div>

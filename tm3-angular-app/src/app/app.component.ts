@@ -1,57 +1,112 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';      
-import { MatIconModule } from '@angular/material/icon';        
-import { MatButtonModule } from '@angular/material/button'; 
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+type MeDto = {
+  id?: number;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string | string[];
+  roles?: string[];
+};
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,  
-    RouterModule,
     CommonModule,
-    FormsModule,
+    RouterOutlet, RouterLink,
+    HttpClientModule,
+
+    MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule,
-    MatInputModule,
-    MatMenuModule,      
-    MatIconModule,    
-    MatButtonModule,
+
     TranslateModule
   ],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  selectedLang = 'en';
-  translate = inject(TranslateService);
-  platformId = inject(PLATFORM_ID);
+export class AppComponent implements OnInit {
+  selectedLang = this.translate.currentLang || this.translate.defaultLang || 'en';
 
-  constructor() {
-    const isBrowser = isPlatformBrowser(this.platformId);
-    const fallbackLang = 'en';
-    const savedLang = isBrowser ? localStorage.getItem('lang') || fallbackLang : fallbackLang;
+  isLoggedIn = false;
+  firstName = '';
+  lastName = '';
+  isAdmin = false;
 
-    this.translate.use(fallbackLang);
-    this.translate.use(savedLang);
-    this.selectedLang = savedLang;
+  constructor(
+    private translate: TranslateService,
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.refreshAuthHeader();
+    window.addEventListener('auth-changed', () => this.refreshAuthHeader());
   }
 
-  switchLang(lang: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('lang', lang);
+  refreshAuthHeader() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const token = localStorage.getItem('token');
+    this.isLoggedIn = !!token;
+
+    if (!this.isLoggedIn) {
+      this.firstName = '';
+      this.lastName = '';
+      this.isAdmin = false;
+      return;
     }
-    this.translate.use(lang);
-    this.selectedLang = lang;
+
+    this.http.get<MeDto>('/api/users/me').subscribe({
+      next: (me) => {
+        this.firstName = me.firstName || '';
+        this.lastName = me.lastName || '';
+
+        const rawRoles: string[] = Array.isArray(me.roles)
+          ? me.roles
+          : Array.isArray(me.role)
+            ? me.role
+            : typeof me.role === 'string'
+              ? me.role.split(/[,\s]+/).filter(Boolean)
+              : [];
+
+        const normalized = rawRoles.map(r =>
+          r.trim().toUpperCase().replace(/^ROLE_/, '')
+        );
+
+        this.isAdmin = normalized.includes('ADMIN');
+      },
+    });
   }
+
+  logout() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      window.dispatchEvent(new Event('auth-changed'));
+    }
+    this.router.navigate(['/welcome']);
+  }
+
+
+  switchLang(lang: string) {
+    this.selectedLang = lang;
+    this.translate.use(lang);
+  }
+
+  readonly year = new Date().getFullYear();
 }

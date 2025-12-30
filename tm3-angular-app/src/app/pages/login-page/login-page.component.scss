@@ -1,145 +1,174 @@
 @use "sass:color";
 
-$primary-color: #0052cc;
-$primary-hover: color.adjust($primary-color, $lightness: -10%);
-$error-color: #de350b;
-$background-color: #f4f5f7;
-$form-background: #ffffff;
-$text-color: #172b4d;
-$border-color: #dfe1e6;
-$border-radius: 10px;
-$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Твои “сайтовые” цвета */
+$primary: #4f46e5;   // indigo
+$accent: #22c55e;    // green
+$text: #0f172a;
+$muted: #64748b;
+$border: rgba(15, 23, 42, 0.10);
 
-body {
-  background-color: $background-color;
-  font-family: $font-family;
-}
+$radius: 18px;
 
 .login-container {
-  min-height: 80vh;
+  min-height: calc(100vh - 140px); /* чтобы не прилипало к хедеру/футеру */
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 60px 20px;
+  justify-content: center;
+  padding: 28px 24px 40px;
 }
 
+/* Карточка формы — как feature cards */
 .task-form {
   width: 100%;
   max-width: 420px;
-  background-color: $form-background;
-  border-radius: $border-radius;
-  box-shadow: 0 8px 24px rgba(9, 30, 66, 0.2);
-  padding: 40px 36px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 28px 26px;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.10),
+    0 6px 14px rgba(15, 23, 42, 0.06);
+
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  color: $text-color;
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 12px 30px rgba(9, 30, 66, 0.25);
-  }
-
-  h2.form-title {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: $text-color;
-  }
+  gap: 16px;
+  color: $text;
 }
 
-.mat-form-field {
-  width: 100%;
-
-  &.mat-form-field-appearance-outline {
-    .mat-form-field-outline {
-      border-color: $border-color;
-      border-radius: $border-radius;
-    }
-
-    &:hover .mat-form-field-outline {
-      border-color: $primary-hover;
-    }
-
-    &.mat-focused .mat-form-field-outline {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
-    }
-
-    .mat-form-field-label {
-      color: $text-color;
-      font-weight: 500;
-    }
-
-    .mat-input-element {
-      font-size: 1rem;
-      padding: 12px 14px;
-      color: $text-color;
-    }
-  }
-}
-
-.mat-error {
-  font-size: 0.85rem;
-  color: $error-color;
-  font-weight: 500;
-  margin-top: 4px;
-}
-.global-error-message {
-  margin-top: -12px; 
-  margin-bottom: 8px;
+.form-title {
+  margin: 0 0 6px;
   text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: $text;
 }
 
+/* Небольшой подзаголовок (если захочешь добавить потом) */
+.form-subtitle {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 13px;
+  color: $muted;
+}
 
+/* Убираем лишнюю высоту mat-form-field из-за subscript */
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Поля ввода — мягкие и в одном стиле */
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-text-field--outlined {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 14px;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__trailing,
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__notch {
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+/* hover */
+:host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__trailing,
+:host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__notch {
+  border-color: rgba(79, 70, 229, 0.35);
+}
+
+/* focus */
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+  border-color: rgba(79, 70, 229, 0.65);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
+  color: rgba(15, 23, 42, 0.70);
+  font-weight: 600;
+}
+
+:host ::ng-deep .mat-mdc-input-element {
+  color: $text;
+}
+
+/* Ошибки */
+.mat-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b42318; /* спокойный red */
+}
+
+.global-error-message {
+  margin-top: 4px;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(180, 35, 24, 0.22);
+  background: rgba(180, 35, 24, 0.06);
+}
+
+/* Кнопки */
 .form-actions {
   display: flex;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
-button.mat-flat-button {
+/* Primary submit */
+:host ::ng-deep button.mat-mdc-unelevated-button,
+:host ::ng-deep button.mat-mdc-raised-button,
+:host ::ng-deep button.mat-mdc-button-base[mat-flat-button] {
   width: 100%;
-  padding: 12px 0;
-  background-color: $primary-color;
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: $border-radius;
-  box-shadow: 0 3px 6px rgba(0, 82, 204, 0.4);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover:not(:disabled) {
-    background-color: $primary-hover;
-    box-shadow: 0 6px 12px rgba(0, 82, 204, 0.5);
-  }
-
-  &:disabled {
-    background-color: color.adjust($primary-color, $lightness: 50%);
-    cursor: not-allowed;
-    box-shadow: none;
-  }
+  height: 42px;
+  border-radius: 14px !important;
+  font-weight: 800;
 }
 
+:host ::ng-deep button.mat-mdc-button-base[mat-flat-button].mat-primary {
+  box-shadow: 0 14px 26px rgba(79, 70, 229, 0.20);
+}
+
+/* Secondary link */
+.secondary-action {
+  margin-top: 2px;
+}
 
 .register-link {
-  color: $text-color;
-  font-weight: 400;
-  text-decoration: none;
-  cursor: pointer;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
 
-  &:hover {
-    text-decoration: underline;
-  }
+  color: $text;
+  text-decoration: none;
+  font-weight: 700;
+
+  background: rgba(255, 255, 255, 0.60);
+  border: 1px solid rgba(15, 23, 42, 0.10);
 }
 
+.register-link:hover {
+  border-color: rgba(79, 70, 229, 0.30);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Mobile */
 @media (max-width: 480px) {
-  .task-form {
-    padding: 32px 24px;
+  .login-container {
+    padding: 22px 16px 28px;
   }
 
-  h2.form-title {
-    font-size: 1.6rem;
+  .task-form {
+    padding: 22px 18px;
+  }
+
+  .form-title {
+    font-size: 20px;
   }
 }

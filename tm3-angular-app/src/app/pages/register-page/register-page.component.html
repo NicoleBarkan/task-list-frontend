@@ -5,41 +5,50 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'REGISTER.FIRST_NAME' | translate }}</mat-label>
       <input matInput formControlName="firstName" [placeholder]="'REGISTER.PLACEHOLDER.FIRST_NAME' | translate" />
-      @if (form.controls['firstName'].hasError('required')) {
-        <mat-error>{{ 'REGISTER.ERRORS.FIRST_NAME_REQUIRED' | translate }}</mat-error>
-      }
     </mat-form-field>
+    @if ((form.controls.firstName.touched || registrationAttempted()) && form.controls.firstName.hasError('required')) {
+    <mat-error>{{ 'REGISTER.ERRORS.FIRST_NAME_REQUIRED' | translate }}</mat-error>
+    }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'REGISTER.LAST_NAME' | translate }}</mat-label>
       <input matInput formControlName="lastName" [placeholder]="'REGISTER.PLACEHOLDER.LAST_NAME' | translate" />
-      @if (form.controls['lastName'].hasError('required')) {
-        <mat-error>{{ 'REGISTER.ERRORS.LAST_NAME_REQUIRED' | translate }}</mat-error>
-      }
     </mat-form-field>
+    @if ((form.controls.lastName.touched || registrationAttempted()) && form.controls.lastName.hasError('required')) {
+    <mat-error>{{ 'REGISTER.ERRORS.LAST_NAME_REQUIRED' | translate }}</mat-error>
+    }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'REGISTER.USERNAME' | translate }}</mat-label>
       <input matInput formControlName="username" [placeholder]="'REGISTER.PLACEHOLDER.USERNAME' | translate" />
-      @if (form.controls['username'].hasError('required')) {
-        <mat-error>{{ 'REGISTER.ERRORS.USERNAME_REQUIRED' | translate }}</mat-error>
-      }
     </mat-form-field>
+    @if (form.controls.username.touched || registrationAttempted()) {
+    @if (form.controls.username.hasError('required')) {
+    <mat-error>{{ 'REGISTER.ERRORS.USERNAME_REQUIRED' | translate }}</mat-error>
+    } @else if (form.controls.username.hasError('minlength')) {
+    <mat-error>{{ 'REGISTER.ERRORS.USERNAME_MINLENGTH' | translate }}</mat-error>
+    } @else if (form.controls.username.hasError('maxlength')) {
+    <mat-error>{{ 'REGISTER.ERRORS.USERNAME_MAXLENGTH' | translate }}</mat-error>
+    }
+    }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'REGISTER.PASSWORD' | translate }}</mat-label>
       <input matInput type="password" formControlName="password" [placeholder]="'REGISTER.PLACEHOLDER.PASSWORD' | translate" />
-      @if (form.controls['password'].hasError('required') && form.controls['password'].touched) {
-        <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_REQUIRED' | translate }}</mat-error>
-      }
-      @else if (form.controls['password'].hasError('minlength') && form.controls['password'].touched) {
-        <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_MINLENGTH' | translate }}</mat-error>
-      }
     </mat-form-field>
+    @if (form.controls.password.touched || registrationAttempted()) {
+    @if (form.controls.password.hasError('required')) {
+    <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_REQUIRED' | translate }}</mat-error>
+    } @else if (form.controls.password.hasError('minlength')) {
+    <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_MINLENGTH' | translate }}</mat-error>
+    } @else if (form.controls.password.hasError('maxlength')) {
+    <mat-error>{{ 'REGISTER.ERRORS.PASSWORD_MAXLENGTH' | translate }}</mat-error>
+    }
+    }
 
     @if (registrationAttempted() && errorMessage()) {
       <div class="mat-error global-error-message">
-        {{ errorMessage() }}
+        {{ errorMessage() | translate }}
       </div>
     }
 
@@ -47,6 +56,10 @@
       <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading()">
         {{ 'REGISTER.SUBMIT' | translate }}
       </button>
+    </div>
+
+    <div class="form-actions secondary-action">
+      <a routerLink="/login" class="login-link">{{ 'LOGIN.LOGIN_LINK' | translate }}</a>
     </div>
   </form>
 </div>

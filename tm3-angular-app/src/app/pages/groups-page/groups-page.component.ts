@@ -37,7 +37,7 @@ export class GroupsPageComponent implements OnInit {
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
 
-  displayedColumns = ['id', 'name', 'description', 'actions'];
+  displayedColumns = ['id', 'title', 'description', 'actions'];
 
   loading = signal(false);
   groups = signal<GroupDto[]>([]);
@@ -56,17 +56,10 @@ export class GroupsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (data, filter) =>
-      (data.name ?? '').toLowerCase().includes(filter) ||
+      (data.title ?? '').toLowerCase().includes(filter) ||
       (data.description ?? '').toLowerCase().includes(filter);
 
     this.refresh();
-  }
-
-  applyFilter(value: string) {
-    this.dataSource.filter = (value ?? '').trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   refresh() {

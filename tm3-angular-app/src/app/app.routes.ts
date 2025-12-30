@@ -7,6 +7,7 @@ import { TaskDetailsPageComponent } from './pages/task-details-page/task-details
 import { EditTaskPageComponent } from './pages/edit-task-page/edit-task-page.component';
 import { UserListPageComponent } from './pages/user-list-page/user-list-page.component';
 import { UserDetailsPageComponent } from './pages/user-details-page/user-details-page.component';
+import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { GroupsPageComponent } from './pages/groups-page/groups-page.component';
@@ -14,7 +15,8 @@ import { GroupDetailsPageComponent } from './pages/group-details-page/group-deta
 
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+  { path: 'welcome', component: WelcomeComponent },
   { path: 'login', component: LoginPageComponent},
   { path: 'register', component: RegisterPageComponent },
   { path: 'tasks', component: TaskListPageComponent, canActivate: [AuthGuard] },

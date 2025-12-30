@@ -1,14 +1,56 @@
 <div class="top-bar">
-  <div class="language-wrapper">
-    <mat-form-field appearance="outline" class="lang-form">
-      <mat-label>{{ 'APP.LANGUAGE' | translate }}</mat-label>
-      <mat-select [value]="selectedLang" (selectionChange)="switchLang($event.value)">
-        <mat-option value="en">English</mat-option>
-        <mat-option value="lv">Latviešu</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+  <header class="topbar">
+    <a class="brand" routerLink="/welcome">
+      <div class="logo">TL</div>
+      <div class="brand-text">
+        <div class="name">TaskList</div>
+        <div class="tagline">{{ 'NAV.TASK_GROUPS_ROLES' | translate }}</div>
+      </div>
+    </a>
 
-<div class="page">
-  <router-outlet></router-outlet>
+    <div class="spacer"></div>
+
+    <nav class="nav" *ngIf="!isLoggedIn; else loggedNav">
+      <a mat-button routerLink="/login">{{ 'NAV.LOGIN' | translate }}</a>
+      <a mat-raised-button color="primary" routerLink="/register">{{ 'NAV.REGISTER' | translate }}</a>
+    </nav>
+
+    <ng-template #loggedNav>
+      <div class="logged">
+        <div class="actions">
+          <a mat-stroked-button routerLink="/tasks">{{ 'NAV.TASKS' | translate }}</a>
+
+          <a mat-stroked-button color="accent" routerLink="/users" *ngIf="isAdmin">
+            {{ 'NAV.USERS' | translate }}
+          </a>
+
+          <a mat-stroked-button color="accent" routerLink="/groups" *ngIf="isAdmin">
+            {{ 'NAV.GROUPS' | translate }}
+          </a>
+
+          <button mat-stroked-button color="warn" class="logout-btn" (click)="logout()">
+            {{ 'NAV.LOGOUT' | translate }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="language-wrapper">
+      <mat-form-field appearance="outline" class="lang-form">
+        <mat-select [value]="selectedLang" (selectionChange)="switchLang($any($event).value)">
+          <mat-option value="en">English</mat-option>
+          <mat-option value="lv">Latviešu</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </header>
+
+
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="footer">
+    <div>© {{ year }} TaskListApp. Ella Nikola Barkane, eb23122.</div>
+  </footer>
 </div>

@@ -1,61 +1,62 @@
 import { Component, OnInit, inject, Signal, effect } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Task } from '../../models/task.model';
-import { CreateTaskPageComponent } from '../../pages/create-task-page/create-task-page.component';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
+
+import { Task } from '../../models/task.model';
 import * as TasksActions from '../../store/tasks/tasks.actions';
 import { selectSelectedTask } from '../../store/tasks/tasks.reducer';
+import { CreateTaskPageComponent } from '../create-task-page/create-task-page.component';
+import { TaskCreateDto } from '../../models/TaskCreateDto';
 
 @Component({
   selector: 'app-edit-task-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],
-  template: '<p>Waiting task for editing...</p>',
-  styleUrls: ['./edit-task-page.component.scss']
+  imports: [CommonModule, RouterModule],
+  template: '',
 })
 export class EditTaskPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private store = inject(Store);
-  
+
   task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
   private dialogOpened = false;
-  
+  private currentId: number | null = null;
+
   constructor() {
     effect(() => {
-      const current = this.task();
-      if (current && !this.dialogOpened) {
-        this.dialogOpened = true;
-        this.openEditDialog(current);
-      }
+      const t = this.task();
+      if (!t || this.dialogOpened) return;
+
+      this.dialogOpened = true;
+      this.openEditDialog(t);
     });
   }
 
   ngOnInit(): void {
-      const id = Number( this.route.snapshot.paramMap.get('id'));
-      if (isNaN(id)) {
-        this.router.navigate(['/tasks']);
-        return;
-      }
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!Number.isFinite(id)) {
+      this.router.navigate(['/tasks']);
+      return;
+    }
 
+    this.currentId = id;
     this.store.dispatch(TasksActions.loadTaskById({ id }));
   }
 
-  openEditDialog(task: Task): void {
-    const dialogRef = this.dialog.open(CreateTaskPageComponent, {
+  private openEditDialog(task: Task): void {
+    const ref = this.dialog.open(CreateTaskPageComponent, {
       width: '600px',
       disableClose: true,
-      data: {
-        task,
-        isEditMode: true
-      }
+      autoFocus: false,
+      restoreFocus: false,
+      data: { mode: 'edit', task }
     });
 
-    dialogRef.afterClosed().subscribe((updatedTask: Task | undefined) => {
+    ref.afterClosed().subscribe((updatedTask: TaskCreateDto | undefined) => {
       if (updatedTask) {
         this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask }));
       }
