@@ -1,144 +1,166 @@
-@use '../../../styles/variables';
+@use "sass:color";
+
+$primary: #4f46e5;
+$primary-hover: color.adjust($primary, $lightness: -8%);
+$text: #0f172a;
+$muted: #64748b;
+$border: rgba(15, 23, 42, 0.12);
+$card: rgba(255, 255, 255, 0.9);
+
+$radius-lg: 18px;
+$radius-md: 14px;
 
 .user-list-wrapper {
-  background-color: #f5f7fa;
-  padding: 2rem 1rem;
   min-height: 90vh;
+  padding: 26px 24px 46px;
+  color: $text;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1e293b;
+
+  background: none;
 }
 
+/* ===== HEADER ===== */
+
 .user-list-header {
+  max-width: 1100px;
+  margin: 0 auto 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  gap: 14px;
 
   h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #1e293b;
     margin: 0;
-  }
-
-  .back-button {
-    button {
-      background: white;
-      color: #1e293b;
-      border: 2px solid #9ca3af;
-      padding: 0.6rem 1.2rem;
-      font-weight: 600;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-      transition: all 0.25s ease;
-
-      &:hover {
-        background-color: #f3f4f6;
-        color: #111827;
-        border-color: #6b7280;
-        transform: translateY(-1px);
-      }
-    }
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.2px;
   }
 }
+
+/* ===== LIST ===== */
 
 .user-list-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 
+/* ===== CARD ===== */
+
 mat-card {
-  background: linear-gradient(145deg, #cbd5e1, #f1f5f9);
-  border-radius: 16px;
-  padding: 1.5rem;
-  width: 340px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  background: $card;
+  backdrop-filter: blur(6px);
+
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  gap: 12px;
+
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.22s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
   }
 }
 
 mat-card-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 12px;
   padding-bottom: 0;
 }
 
+/* ===== AVATAR ===== */
+
 .user-avatar {
-  background-color: #334155;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1.2rem;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  flex-shrink: 0;
+
+  border-radius: $radius-md;
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  color: #fff;
+
+  background: linear-gradient(135deg, #4f46e5, #22c55e);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
 }
+
+/* ===== INFO ===== */
 
 .user-info {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .user-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 15px;
+    font-weight: 900;
+    color: $text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .user-username {
-    font-size: 0.95rem;
-    color: #6b7280;
+    font-size: 14px;
+    color: $muted;
   }
 }
 
-.user-group-row,
-  .user-assign-row {
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-  }
+/* ===== GROUP / ASSIGN ===== */
 
-  .group-label {
-    color: #475569;
-    font-size: 0.95rem;
-  }
-
-  .user-assign-row {
-    .group-select {
-      width: 100%;
-    }
+.user-assign-row {
+  margin: 15px 20px 0;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: $muted;
 }
+
+.user-assign-row .group-select {
+  width: 100%;
+}
+
+/* ===== ACTIONS ===== */
 
 mat-card-actions {
   display: flex;
   justify-content: flex-end;
 
   button {
-    background: white;
-    border: 2px solid #94a3b8;
-    color: #334155;
-    padding: 0.6rem 1.4rem;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    height: 36px;
+    border-radius: $radius-md;
+    padding: 0 14px;
+    font-weight: 800;
+
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid $border;
+    color: $text;
+
+    transition: all 0.2s ease;
 
     &:hover {
-      background-color: #f1f5f9;
-      color: #1e293b;
-      border-color: #64748b;
+      background: rgba(79, 70, 229, 0.06);
+      border-color: rgba(79, 70, 229, 0.25);
+      color: $primary;
+      transform: translateY(-1px);
     }
   }
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 760px) {
+  .user-list-wrapper { padding: 18px 16px 30px; }
+  .user-list-content { grid-template-columns: 1fr; }
 }

@@ -8,8 +8,8 @@ import { Role } from '../models/role.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly http = inject(HttpClient);           
-  private readonly apiUrl = environment.apiBaseUrl;   
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = environment.apiBaseUrl;
   private userDetailsSubject = new BehaviorSubject<UserDetails | null>(null);
 
   getUsers(): Observable<User[]> {
@@ -37,11 +37,11 @@ export class UserService {
     return this.userDetailsSubject.asObservable();
   }
 
-list(filter?: { groupId?: number }) {
-  let params = new HttpParams();
-  if (filter?.groupId != null) params = params.set('groupId', String(filter.groupId));
-  return this.http.get<User[]>(`${this.apiUrl}/users`, { params });
-}
+  list(filter?: { groupId?: number }) {
+    let params = new HttpParams();
+    if (filter?.groupId != null) params = params.set('groupId', String(filter.groupId));
+    return this.http.get<User[]>(`${this.apiUrl}/users`, { params });
+  }
 
   assignGroup(userId: number, groupId: number) {
     return this.http.put<User>(`${this.apiUrl}/users/${userId}/group/${groupId}`, {});

@@ -1,6 +1,6 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,8 @@ import { AuthStore } from '../../store/auth/auth.store';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    TranslateModule
+    TranslateModule,
+    RouterModule
   ],
 })
 export class RegisterPageComponent {
@@ -28,33 +29,38 @@ export class RegisterPageComponent {
   private auth = inject(AuthStore);
 
   form = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-    });
+    username: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
+    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+  });
 
   errorMessage = this.auth.error;
   loading = this.auth.loading;
   registrationAttempted = signal(false);
 
   constructor() {
-  effect(() => {
-    const err = this.errorMessage();
-    if (err) console.warn('Register error:', err);
-    if (this.auth.user()) {
-      this.router.navigate(['/tasks']);
-    }
-  });
-}
+    effect(() => {
+      const err = this.errorMessage();
+      if (err) console.warn('Register error:', err);
+
+      if (this.auth.user()) {
+        this.router.navigate(['/tasks']).then(() => {
+          window.dispatchEvent(new Event('auth-changed'));
+        });
+      }
+    });
+  }
 
   onSubmit() {
     this.registrationAttempted.set(true);
 
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const { username, password, firstName, lastName } = this.form.value;
-
     if (!username || !password || !firstName || !lastName) return;
 
     this.auth.register({ username, password, firstName, lastName });

@@ -1,186 +1,267 @@
 .task-list {
-  background-color: #f5f7fa;
-  padding: 2rem 1rem;
   min-height: 90vh;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1e293b;
+  padding: 26px 24px 46px;
+  color: #0f172a;
+  background: none;
 }
 
 .task-list-header {
+  max-width: 1100px;
+  margin: 0 auto 14px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
-}
+  align-items: center;
+  gap: 14px;
 
-.greeting-text {
-  font-size: 1.6rem;
-  font-weight: 500;
-  color: #1f2937;
-  padding-left: 1rem;
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.2px;
+    color:  #0f172a;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-  strong {
-    color: #0f172a;
+  .right-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 }
 
-.right-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.8rem;
-}
+.task-list-header .admin-buttons button {
+  height: 40px;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
 
-.logout-button button,
-.admin-buttons button,
-button[mat-stroked-button] {
-  background: white;
-  padding: 0.6rem 1.4rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.25s ease;
-}
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  color: #0f172a;
 
-.logout-button button {
-  color: #1f2937;
-  border: 2px solid #ef4444;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
 
   &:hover {
-    background-color: #fecaca;
-    color: #b91c1c;
-    border-color: #b91c1c;
+    background: rgba(79, 70, 229, 0.06);
+    border-color: rgba(79, 70, 229, 0.25);
+    color: #4f46e5;
     transform: translateY(-1px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
   }
 }
 
-.admin-buttons {
+.board {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.column {
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.col-head {
   display: flex;
-  flex-direction: row;
-  gap: 0.6rem;
-
-  button {
-    color: #1f2937;
-    border: 2px solid #9ca3af;
-
-    &:hover {
-      background-color: #f3f4f6;
-      color: #111827;
-      border-color: #6b7280;
-      transform: translateY(-1px);
-    }
-  }
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-button[mat-stroked-button] {
-  border: 2px solid #94a3b8;
-  color: #334155;
-
-  &:hover {
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border-color: #64748b;
-  }
-
-  &.mat-warn {
-    border-color: #ef4444;
-    color: #dc2626;
-
-    &:hover {
-      background-color: #fecaca;
-      color: #b91c1c;
-      border-color: #b91c1c;
-    }
-  }
+.col-title {
+  font-weight: 900;
+  letter-spacing: 0.02em;
 }
 
-.task-list-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
+.col-count {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: #0f172a;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.col-open .col-head { box-shadow: inset 0 3px 0 rgba(79, 70, 229, 0.35); }
+.col-progress .col-head { box-shadow: inset 0 3px 0 rgba(245, 158, 11, 0.35); }
+.col-done .col-head { box-shadow: inset 0 3px 0 rgba(34, 197, 94, 0.35); }
+
+.col-body {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
 }
 
 .task-card {
-  background: linear-gradient(145deg, #c9c9c9, #f0f4f8);
   border-radius: 18px;
-  padding: 2rem;
-  width: 360px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.90);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  }
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
+  border-color: rgba(79, 70, 229, 0.18);
 }
 
 .task-avatar {
-  background-color: #374151;
-  color: white;
-  font-weight: 700;
-  font-size: 1.2rem;
+  background: linear-gradient(135deg, #4f46e5, #22c55e);
+  color: #ffffff;
+  font-weight: 900;
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
 }
 
 .task-link {
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 1.3rem;
+  color: #0f172a;
+  font-weight: 900;
   text-decoration: none;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #111827;
-    text-decoration: underline;
-  }
+}
+.task-link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
-.task-meta {
-  color: #6b7280;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.meta-row {
+  margin-top: 6px;
   display: flex;
+  gap: 8px;
   align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+.status-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
+.status-open {
+  background: rgba(79, 70, 229, 0.08);
+  border-color: rgba(79, 70, 229, 0.20);
+  color: #3730a3;
+}
+
+.status-progress {
+  background: rgba(245, 158, 11, 0.10);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #92400e;
+}
+
+.status-done {
+  background: rgba(34, 197, 94, 0.10);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #166534;
+}
+
+.type-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.type-epic {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.30);
+  color: #6b21a8;
+}
+
+.type-story {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.30);
+  color: #166534;
+}
+
+.type-task {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.30);
+  color: #1d4ed8;
+}
+
+.type-subtask {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #92400e;
+}
+
+.type-bug {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #b91c1c;
+}
+
+/* text */
 .task-description {
-  color: #374151;
-  font-size: 1rem;
-  margin-top: 0.6rem;
+  margin-top: 15px;
+  color: #334155;
+  line-height: 1.55;
+  font-size: 14px;
   white-space: pre-line;
-  min-height: 60px;
 }
 
-.task-date {
-  font-size: 0.85rem;
-  color: #727579;
-  font-style: italic;
+.task-assigned {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: #475569;
 }
 
 .task-actions {
   display: flex;
-  gap: 12px;
-  justify-content: flex-start;
-  margin-top: 1rem;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: flex-end;
+  padding-bottom: 6px;
+}
+
+.empty {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  color: #64748b;
+  padding-top: 16px;
+}
+
+@media (max-width: 960px) {
+  .task-list { padding: 18px 16px 30px; }
+  .board { grid-template-columns: 1fr; }
+}
+
+:host ::ng-deep .task-actions .mat-mdc-outlined-button.mat-warn {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  background: rgba(239, 68, 68, 0.06) !important;
+  color: #b91c1c !important;
+}
+
+:host ::ng-deep .task-actions .mat-mdc-outlined-button.mat-warn:hover {
+  border-color: rgba(239, 68, 68, 0.65) !important;
+  background: rgba(239, 68, 68, 0.50) !important;
+  color: #7f1d1d !important;
+}
+
+:host ::ng-deep .task-actions .mat-mdc-outlined-button.mat-warn:active {
+  transform: translateY(1px);
 }

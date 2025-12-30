@@ -8,6 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import * as TasksActions from '../../store/tasks/tasks.actions';
+import { Store } from '@ngrx/store';
 import { UsersStore } from '../../store/users/users.store';
 import { GroupService } from '../../services/group.service';
 import { UserService } from '../../services/user.service';
@@ -27,21 +29,35 @@ import { getGroupNameById } from '../../utils/display.utils';
   templateUrl: './user-list-page.component.html',
   styleUrls: ['./user-list-page.component.scss']
 })
+
 export class UserListPageComponent implements OnInit {
   store = inject(UsersStore);
   private groupService = inject(GroupService);
   private userService  = inject(UserService);
 
-  users = this.store.users;           
+  users = this.store.users;
   loading = this.store.loading;
   error = this.store.error;
 
   groups = signal<GroupDto[]>([]);
   saving = signal<Record<number, boolean>>({});
+  private pendingUserId = signal<number | null>(null);
 
   constructor() {
     effect(() => {
       if (this.error()) console.error('Error loading users:', this.error());
+    });
+
+    effect(() => {
+      const pending = this.pendingUserId();
+      const isLoading = this.loading();
+
+      if (pending != null && !isLoading) {
+        const s = { ...this.saving() };
+        delete s[pending];
+        this.saving.set(s);
+        this.pendingUserId.set(null);
+      }
     });
   }
 
@@ -57,19 +73,9 @@ export class UserListPageComponent implements OnInit {
   }
 
   changeGroup(user: User, groupId: number) {
-    this.saving.set({ ...this.saving(), [user.id]: true });
+      this.saving.set({ ...this.saving(), [user.id]: true });
+      this.pendingUserId.set(user.id);
 
-    const old = user.groupId ?? null;
-    user.groupId = groupId;
-
-    this.userService.assignGroup(user.id, groupId).subscribe({
-      next: () => {},
-      error: () => { user.groupId = old; },
-      complete: () => {
-        const s = { ...this.saving() };
-        delete s[user.id];
-        this.saving.set(s);
-      }
-    });
-  }
+      this.store.assignGroup({ id: user.id, groupId });
+    }
 }

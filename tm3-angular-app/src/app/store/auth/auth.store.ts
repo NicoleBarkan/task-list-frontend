@@ -3,10 +3,11 @@ import { inject, PLATFORM_ID, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { tap, switchMap } from 'rxjs/operators';
+import { tap, switchMap, catchError } from 'rxjs/operators';
 import { Role } from '../../models/role.model';
 import { User } from '../../models/user.model';
 import { getHttpErrorMessage } from '../../utils/http-error.utils';
+import { EMPTY } from 'rxjs';
 
 interface AuthState {
   user: User | null;
@@ -74,19 +75,22 @@ export const AuthStore = signalStore(
           http.post<LoginResponse>('/api/auth/login', { username, password }).pipe(
             tap(res => writeStoredTokenAndRoles(isBrowser, res.token, res.roles ?? res.role ?? [])),
             switchMap(() => http.get<MeResponse>('/api/users/me')),
-            tap({
-              next: (u) => {
-                const roles = extractRoles(u, isBrowser);
-                patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
-              },
-              error: (e: unknown) => {
-                patchState(store, { loading: false, error: getHttpErrorMessage(e, 'Login failed') });
-              }
+            tap((u) => {
+              const roles = extractRoles(u, isBrowser);
+              patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
+            }),
+            catchError((e: unknown) => {
+              patchState(store, {
+                loading: false,
+                error: getHttpErrorMessage(e, 'LOGIN.INVALID_CREDENTIALS'),
+              });
+              return EMPTY;
             })
           )
         )
       )
     );
+
 
     const register = rxMethod<{ username: string; password: string; firstName: string; lastName: string }>(params$ =>
       params$.pipe(
@@ -96,14 +100,16 @@ export const AuthStore = signalStore(
             switchMap(() => http.post<LoginResponse>('/api/auth/login', { username: p.username, password: p.password })),
             tap(res => writeStoredTokenAndRoles(isBrowser, res.token, res.roles ?? res.role ?? [])),
             switchMap(() => http.get<MeResponse>('/api/users/me')),
-            tap({
-              next: (u) => {
-                const roles = extractRoles(u, isBrowser);
-                patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
-              },
-              error: (e: unknown) => {
-                patchState(store, { loading: false, error: getHttpErrorMessage(e, 'Registration failed') });
-              }
+            tap((u) => {
+              const roles = extractRoles(u, isBrowser);
+              patchState(store, { user: u, roles, isLoggedIn: true, loading: false });
+            }),
+            catchError((e: unknown) => {
+              patchState(store, {
+                loading: false,
+                error: getHttpErrorMessage(e, 'REGISTER.REGISTRATION_FAILED'),
+              });
+              return EMPTY;
             })
           )
         )

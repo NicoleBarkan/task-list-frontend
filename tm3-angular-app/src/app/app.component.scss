@@ -1,39 +1,248 @@
-.top-bar {
-  display: block;
-  justify-content: flex-end;
-  align-items: center;
-  background-color: #f5f7fa;
-  padding: 15px 15px;
-  position: sticky;
-  z-index: 100;
+/* =========================================
+   APP SHELL BACKGROUND
+   ========================================= */
+
+.top-bar,
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 10% 0%, rgba(79, 70, 229, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(34, 197, 94, 0.10), transparent 60%),
+    linear-gradient(180deg, #f7f9fc 0%, #ffffff 70%);
+  color: #0f172a;
 }
 
-.language-wrapper {
-  .lang-form {
-    width: 150px;
-    margin: 0;
+/* =========================================
+   HEADER LAYOUT
+   ========================================= */
 
-    .mat-form-field-wrapper {
-      padding: 0;
-    }
+.topbar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
 
-    .mat-select-trigger {
-      font-size: 0.9rem;
-      color: #172b4d;
-    }
+  display: flex;
+  align-items: center;
+  gap: 14px;
 
-    .mat-form-field-outline {
-      border-radius: 6px;
-    }
+  position: sticky;
+  top: 0;
+  z-index: 10;
 
-    &.mat-focused .mat-form-field-outline-thick {
-      border-color: #0052cc;
-      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
-    }
+  background: rgba(247, 249, 252, 0.55);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 0 0 18px 18px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* =========================================
+   BRAND
+   ========================================= */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  color: #fff;
+
+  background: linear-gradient(135deg, #4f46e5, #22c55e);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.brand-text {
+  .name {
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .tagline {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
   }
 }
 
-.logout-btn {
+/* =========================================
+   NAV / AUTH AREA
+   ========================================= */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logged {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   LANGUAGE SWITCHER (MAT-SELECT)
+   ========================================= */
+
+.language-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.lang-form {
+  width: 170px;
+}
+
+:host ::ng-deep .lang-form .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+:host ::ng-deep .lang-form.mat-mdc-form-field {
+  .mdc-text-field--outlined {
+    background: rgba(255, 255, 255, 0.90);
+    border-radius: 14px;
+    height: 40px;
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 40px;
+    align-items: center;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__trailing,
+  .mdc-notched-outline__notch {
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  .mat-mdc-select-value {
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  .mat-mdc-select-arrow {
+    color: rgba(15, 23, 42, 0.55);
+  }
+}
+
+/* =========================================
+   MAIN CONTAINER
+   ========================================= */
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.footer {
+  margin-top: 24px;
+  padding: 18px 24px;
+  border-top: 1px solid rgba(15, 23, 42, 0.10);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* =========================================
+   MATERIAL BUTTONS IN HEADER
+   ========================================= */
+
+:host ::ng-deep .topbar .mat-mdc-button,
+:host ::ng-deep .topbar .mat-mdc-raised-button,
+:host ::ng-deep .topbar .mat-mdc-outlined-button {
+  border-radius: 14px !important;
   height: 40px;
-  font-weight: 600;
+  padding: 0 14px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+:host ::ng-deep .topbar a.mat-mdc-button {
+  color: #334155;
+}
+
+:host ::ng-deep .topbar a.mat-mdc-raised-button.mat-primary {
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+}
+
+:host ::ng-deep .topbar .mat-mdc-outlined-button {
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+/* =========================================
+   LOGOUT
+   ========================================= */
+
+:host ::ng-deep .topbar .logout-btn.mat-mdc-outlined-button {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  background: rgba(239, 68, 68, 0.06);
+  color: #b91c1c;
+
+  font-weight: 800;
+}
+
+:host ::ng-deep .topbar .logout-btn.mat-mdc-outlined-button:hover {
+  background: rgba(239, 68, 68, 0.45);
+  border-color: rgba(239, 68, 68, 0.50) !important;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .logged {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .lang-form {
+    width: 150px;
+  }
 }

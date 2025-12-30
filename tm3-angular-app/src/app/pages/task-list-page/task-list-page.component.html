@@ -1,41 +1,46 @@
 <div class="task-list">
   <div class="task-list-header">
-    <div class="greeting-text">
-      {{ 'TASK_LIST.GREETING' | translate }}, <strong>{{ firstName }} {{ lastName }}</strong>!
-    </div>
-
+    <h2>{{ 'TASK_LIST.TASKS' | translate }}</h2>
     <div class="right-controls">
-      <div class="logout-button">
-        <button mat-stroked-button color="warn" (click)="logout()">
-          {{ 'TASK_LIST.LOGOUT' | translate }}
-        </button>
-      </div>
-
       <div class="admin-buttons" *ngIf="isAdmin()">
-        <button mat-raised-button color="primary" (click)="openCreateTask()">
-          {{ 'TASK_LIST.CREATE' | translate }}
-        </button>
-        <button mat-stroked-button color="accent" routerLink="/users">
-          {{ 'TASK_LIST.VIEW_USERS' | translate }}
-        </button>
-        <button mat-stroked-button color="accent" routerLink="/groups">
-          {{ 'TASK_LIST.GROUPS' | translate }}
-        </button>
+        <button mat-raised-button color="primary" (click)="openCreateTask()"><strong>
+          + {{ 'TASK_LIST.CREATE' | translate }}
+        </strong></button>
       </div>
     </div>
   </div>
 
-  <div class="task-list-content">
-    <ng-container *ngIf="tasks().length > 0; else noTasks">
-      @for (task of tasks(); track task.id) {
+  <div class="board" *ngIf="tasks().length > 0; else noTasks">
+    <!-- OPEN -->
+    <section class="column col-open">
+      <div class="col-head">
+        <div class="col-title">OPEN</div>
+        <div class="col-count">{{ openTasks.length }}</div>
+      </div>
+
+      <div class="col-body">
+        @for (task of openTasks; track task.id) {
         <mat-card class="task-card">
           <mat-card-header>
             <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
+
             <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
               {{ task.title }}
             </a>
+
             <mat-card-subtitle>
-              <span class="task-meta">{{ task.type | titlecase }} • {{ task.status | titlecase }}</span>
+              <div class="meta-row">
+                  <span class="type-badge"
+                        [class.type-epic]="task.type === 'EPIC'"
+                        [class.type-story]="task.type === 'STORY'"
+                        [class.type-task]="task.type === 'TASK'"
+                        [class.type-subtask]="task.type === 'SUBTASK'"
+                        [class.type-bug]="task.type === 'BUG'">
+                    {{ task.type }}
+                  </span>
+
+                <span class="status-badge status-open">{{ task.status }}</span>
+              </div>
             </mat-card-subtitle>
           </mat-card-header>
 
@@ -43,16 +48,15 @@
             <p class="task-description">
               {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
             </p>
-            <p class="task-date">
-              {{ 'TASK.DETAILS.CREATED' | translate }}: {{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
-            </p>
-            <p class="task-date" *ngIf="task.updatedOn">
-              {{ 'TASK.DETAILS.UPDATED' | translate }}: {{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}
+
+            <p class="task-assigned">
+              <strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong>
+              {{ getAssignedUserName(task.assignedTo) }}
             </p>
           </mat-card-content>
 
           <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
-            <button mat-stroked-button color="accent" [routerLink]="['/edit', task.id]">
+            <button mat-stroked-button color="accent" (click)="openUpdateTask(task)">
               {{ 'TASK_LIST.EDIT' | translate }}
             </button>
             <button mat-stroked-button color="warn" (click)="deleteTask(task.id)">
@@ -60,11 +64,126 @@
             </button>
           </mat-card-actions>
         </mat-card>
-      }
-    </ng-container>
-    
-    <ng-template #noTasks>
-      <p>{{ 'TASK_LIST.NO_TASKS' | translate }}</p>
-    </ng-template>
+        }
+      </div>
+    </section>
+
+    <!-- IN_PROGRESS -->
+    <section class="column col-progress">
+      <div class="col-head">
+        <div class="col-title">IN_PROGRESS</div>
+        <div class="col-count">{{ progressTasks.length }}</div>
+      </div>
+
+      <div class="col-body">
+        @for (task of progressTasks; track task.id) {
+        <mat-card class="task-card">
+          <mat-card-header>
+            <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
+
+            <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
+              {{ task.title }}
+            </a>
+
+            <mat-card-subtitle>
+              <div class="meta-row">
+                  <span class="type-badge"
+                        [class.type-epic]="task.type === 'EPIC'"
+                        [class.type-story]="task.type === 'STORY'"
+                        [class.type-task]="task.type === 'TASK'"
+                        [class.type-subtask]="task.type === 'SUBTASK'"
+                        [class.type-bug]="task.type === 'BUG'">
+                    {{ task.type }}
+                  </span>
+
+                <span class="status-badge status-progress">{{ task.status }}</span>
+              </div>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="task-description">
+              {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
+            </p>
+
+            <p class="task-assigned">
+              <strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong>
+              {{ getAssignedUserName(task.assignedTo) }}
+            </p>
+          </mat-card-content>
+
+          <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
+            <button mat-stroked-button color="accent" (click)="openUpdateTask(task)">
+              {{ 'TASK_LIST.EDIT' | translate }}
+            </button>
+            <button mat-stroked-button color="warn" (click)="deleteTask(task.id)">
+              {{ 'TASK_LIST.DELETE' | translate }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        }
+      </div>
+    </section>
+
+    <!-- DONE -->
+    <section class="column col-done">
+      <div class="col-head">
+        <div class="col-title">DONE</div>
+        <div class="col-count">{{ doneTasks.length }}</div>
+      </div>
+
+      <div class="col-body">
+        @for (task of doneTasks; track task.id) {
+        <mat-card class="task-card">
+          <mat-card-header>
+            <div mat-card-avatar class="task-avatar">{{ task.id }}</div>
+
+            <a mat-card-title [routerLink]="['/details', task.id]" class="task-link">
+              {{ task.title }}
+            </a>
+
+            <mat-card-subtitle>
+              <div class="meta-row">
+                  <span class="type-badge"
+                        [class.type-epic]="task.type === 'EPIC'"
+                        [class.type-story]="task.type === 'STORY'"
+                        [class.type-task]="task.type === 'TASK'"
+                        [class.type-subtask]="task.type === 'SUBTASK'"
+                        [class.type-bug]="task.type === 'BUG'">
+                    {{ task.type }}
+                  </span>
+
+                <span class="status-badge status-done">{{ task.status }}</span>
+              </div>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="task-description">
+              {{ task.description || ('TASK_LIST.NO_DESCRIPTION' | translate) }}
+            </p>
+
+            <p class="task-assigned">
+              <strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong>
+              {{ getAssignedUserName(task.assignedTo) }}
+            </p>
+          </mat-card-content>
+
+          <mat-card-actions align="end" class="task-actions" *ngIf="isAdmin()">
+            <button mat-stroked-button color="accent" (click)="openUpdateTask(task)">
+              {{ 'TASK_LIST.EDIT' | translate }}
+            </button>
+            <button mat-stroked-button color="warn" (click)="deleteTask(task.id)">
+              {{ 'TASK_LIST.DELETE' | translate }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        }
+      </div>
+    </section>
   </div>
+
+  <ng-template #noTasks>
+    <p class="empty">{{ 'TASK_LIST.NO_TASKS' | translate }}</p>
+  </ng-template>
 </div>

@@ -1,14 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
   canActivate(): boolean {
-    const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('isLoggedIn') === 'true';
+    if (!isPlatformBrowser(this.platformId)) {
+      return true;
+    }
 
-    if (!isLoggedIn) {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
       this.router.navigate(['/login']);
       return false;
     }
@@ -16,3 +22,4 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 }
+

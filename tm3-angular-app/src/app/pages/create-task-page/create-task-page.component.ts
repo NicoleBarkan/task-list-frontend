@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal, signal, computed } from '@angular/core';
+import { Component, Inject, OnInit, Signal, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,23 +6,22 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { Task } from '../../models/task.model';
-import { User } from '../../models/user.model';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
-import { UsersStore } from '../../store/users/users.store';
 import { take } from 'rxjs/operators';
 
+import { Task } from '../../models/task.model';
+import { User } from '../../models/user.model';
+import { UsersStore } from '../../store/users/users.store';
 import { GroupService } from '../../services/group.service';
 import { GroupDto } from '../../models/group.model';
 import { AuthStore } from '../../store/auth/auth.store';
 import { Role } from '../../models/role.model';
+import { TaskCreateDto } from '../../models/TaskCreateDto';
 
-type DialogData = { task?: Task; isEditMode?: boolean };
-type TaskPayload = Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> & {
-  id?: number;
-  group?: { id: number };
-};
+type CreateData = { mode: 'create' };
+type EditData = { mode: 'edit'; task: Task };
+type DialogData = CreateData | EditData;
 
 type TaskForm = FormGroup<{
   title: FormControl<string>;
@@ -33,13 +32,13 @@ type TaskForm = FormGroup<{
   groupId: FormControl<number | null>;
 }>;
 
-
 @Component({
-  selector: 'app-create-task-page',
+  selector: 'app-task-edit-dialog',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -56,100 +55,169 @@ export class CreateTaskPageComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<CreateTaskPageComponent>);
   private groupService = inject(GroupService);
   private authStore = inject(AuthStore);
-  private data = inject(MAT_DIALOG_DATA) as DialogData;
 
-  users: Signal<ReadonlyArray<User>> = this.usersStore.users;
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 
-  task = signal<Task | null>(null);
-  isEditMode = signal(false);
+  readonly UNASSIGNED_GROUP_ID = 1;
+
+  allUsers: Signal<ReadonlyArray<User>> = this.usersStore.users;
+
+  users = computed(() =>
+    this.allUsers().filter(u => u.groupId !== this.UNASSIGNED_GROUP_ID)
+  );
+
   isAdminOrManager = computed(
     () => this.authStore.hasRole(Role.ADMIN) || this.authStore.hasRole(Role.MANAGER)
   );
+
   groups = signal<GroupDto[]>([]);
+  visibleGroups = signal<GroupDto[]>([]);
 
   taskForm: TaskForm = this.fb.group({
-    title: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]),
-    description: this.fb.nonNullable.control('', [Validators.maxLength(200)]),
+    title: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
+    description: this.fb.nonNullable.control('', [Validators.maxLength(2000)]),
     type: this.fb.control<Task['type'] | null>(null, { validators: Validators.required }),
     status: this.fb.control<Task['status'] | null>(null, { validators: Validators.required }),
     assignedTo: this.fb.control<number | null>(null),
     groupId: this.fb.control<number | null>(null)
   });
+
   trackById = (_: number, u: { id: number }) => u.id;
-
-  ngOnInit() {
-    this.task.set(this.data?.task ?? null);
-    this.isEditMode.set(this.data?.isEditMode ?? false);
-
-    const groupCtrl = this.groupIdCtrl;
-    if (this.isAdminOrManager() && groupCtrl) {
-      groupCtrl.addValidators(Validators.required);
-      groupCtrl.updateValueAndValidity({ emitEvent: false });
-    }
-
-    const currentTask = this.task();
-    if (currentTask) {
-      this.taskForm.patchValue({
-        title: currentTask.title,
-        description: currentTask.description ?? '',
-        type: currentTask.type,
-        status: currentTask.status,
-        assignedTo: currentTask.assignedTo ?? null,
-        groupId: currentTask.groupId  
-      }, { emitEvent: false });
-    }
-
-    this.usersStore.loadUsers();
-
-    if (this.isAdminOrManager()) {
-      this.groupService.list().pipe(take(1)).subscribe({
-        next: list => this.groups.set(list),
-        error: () => this.groups.set([])
-      });
-    }
-  }
-
-  onSubmit() {
-    if (this.taskForm.invalid) {
-      this.taskForm.markAllAsTouched();
-      return;
-    }
-
-    const formValue = this.taskForm.getRawValue();
-    const existing = this.task();
-
-    const effectiveGroupId =
-      this.isAdminOrManager() ? formValue.groupId : this.authStore.user()?.groupId;
-
-    if (this.isAdminOrManager() && (effectiveGroupId == null)) {
-      this.groupIdCtrl?.setErrors({ required: true });
-      this.taskForm.markAllAsTouched();
-      return;
-    }
-
-    const base: Pick<Task, 'title' | 'description' | 'type' | 'status' | 'assignedTo'> = {
-      title: String(formValue.title),
-      description: formValue.description ?? '',
-      type: formValue.type as Task['type'],
-      status: formValue.status as Task['status'],
-      assignedTo: formValue.assignedTo ?? null
-    };
-
-    const result: TaskPayload = {
-      ...(existing?.id ? { id: existing.id } : {}),
-      ...base,
-      ...(this.isAdminOrManager() ? { group: { id: effectiveGroupId as number } } : {})
-    };
-      this.dialogRef.close(result);
-    }
-
-  onCancel() {
-    this.dialogRef.close();
-  }
 
   get titleCtrl() { return this.taskForm.get('title'); }
   get descriptionCtrl() { return this.taskForm.get('description'); }
   get typeCtrl() { return this.taskForm.get('type'); }
   get statusCtrl() { return this.taskForm.get('status'); }
   get groupIdCtrl() { return this.taskForm.get('groupId'); }
+
+  isEditMode(): boolean {
+    return this.data.mode === 'edit';
+  }
+
+ngOnInit(): void {
+  this.usersStore.loadUsers();
+
+  if (this.data.mode === 'edit') {
+    const t = this.data.task;
+    this.taskForm.patchValue({
+      title: t.title,
+      description: t.description ?? '',
+      type: t.type,
+      status: t.status,
+      assignedTo: t.assignedTo ?? null,
+      groupId: t.groupId ?? null
+    }, { emitEvent: false });
+  }
+
+  if (this.isAdminOrManager() && this.groupIdCtrl) {
+    this.groupIdCtrl.addValidators(Validators.required);
+    this.groupIdCtrl.updateValueAndValidity({ emitEvent: false });
+  }
+
+  if (this.isAdminOrManager()) {
+    this.groupService.list().pipe(take(1)).subscribe({
+      next: list => {
+        this.groups.set(list);
+        this.visibleGroups.set(list);
+
+        if (this.data.mode === 'create' && !this.groupIdCtrl?.value) {
+          const unassigned = list.find(g => g.id === this.UNASSIGNED_GROUP_ID);
+          if (unassigned?.id != null) {
+            this.groupIdCtrl?.setValue(unassigned.id, { emitEvent: false });
+          }
+        }
+
+        const assigneeId = this.taskForm.get('assignedTo')?.value ?? null;
+        this.syncGroupWithAssignee(assigneeId);
+      },
+      error: () => this.groups.set([])
+    });
+  }
+
+  this.setupAssignedToGroupSync();
+  this.setupGroupChangeUnassign();
+}
+
+  onSubmit(): void {
+    if (this.taskForm.invalid) {
+      this.taskForm.markAllAsTouched();
+      return;
+    }
+
+    const v = this.taskForm.getRawValue();
+
+    if (v.type == null || v.status == null) return;
+
+    const effectiveGroupId =
+      this.isAdminOrManager()
+        ? v.groupId
+        : this.authStore.user()?.groupId ?? null;
+
+    if (this.isAdminOrManager() && effectiveGroupId == null) {
+      this.groupIdCtrl?.setErrors({ required: true });
+      return;
+    }
+
+    const result: TaskCreateDto = {
+      title: String(v.title),
+      description: v.description ?? '',
+      type: v.type,
+      status: v.status,
+      groupId: effectiveGroupId,
+      assignedToId: v.assignedTo ?? null
+    };
+
+    this.dialogRef.close(result);
+  }
+
+  onCancel(): void {
+    this.dialogRef.close();
+  }
+
+  private setupAssignedToGroupSync(): void {
+    if (!this.isAdminOrManager()) return;
+
+    this.taskForm.get('assignedTo')?.valueChanges.subscribe((userId: number | null) => {
+      this.syncGroupWithAssignee(userId);
+    });
+  }
+
+  private setupGroupChangeUnassign(): void {
+    if (!this.isAdminOrManager()) return;
+
+    const groupCtrl = this.groupIdCtrl;
+    const assignedCtrl = this.taskForm.get('assignedTo');
+    if (!groupCtrl || !assignedCtrl) return;
+
+    groupCtrl.valueChanges.subscribe((groupId: number | null) => {
+      const assigneeId = assignedCtrl.value;
+      if (!assigneeId || groupId == null) return;
+
+      const user = this.users().find(u => u.id === assigneeId);
+      const userGroupId = user?.groupId ?? null;
+
+      if (userGroupId && userGroupId !== groupId) {
+        assignedCtrl.setValue(null, { emitEvent: false });
+      }
+    });
+  }
+
+  private syncGroupWithAssignee(userId: number | null): void {
+    if (!this.isAdminOrManager()) return;
+
+    const groupCtrl = this.groupIdCtrl;
+    if (!groupCtrl) return;
+
+    this.visibleGroups.set(this.groups());
+
+    if (this.data.mode === 'edit' && groupCtrl.value != null) return;
+
+    if (userId) {
+      const user = this.users().find(u => u.id === userId);
+      const userGroupId = user?.groupId ?? null;
+      if (userGroupId) {
+        groupCtrl.setValue(userGroupId, { emitEvent: false });
+      }
+    }
+  }
 }

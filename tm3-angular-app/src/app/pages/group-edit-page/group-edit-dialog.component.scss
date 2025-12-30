@@ -1,72 +1,234 @@
 @use "sass:color";
 
-$primary: #0052cc;
-$primary-hover: color.adjust($primary, $lightness: -10%);
-$text: #172b4d;
-$muted: #dfe1e6;
+$primary: #4f46e5;
+$primary-hover: color.adjust($primary, $lightness: -8%);
+$text: #0f172a;
+$muted: #64748b;
+$border: rgba(15, 23, 42, 0.12);
 
-:host { display: block; }
+$card-bg: rgba(255, 255, 255, 0.85);
+$card-bg-solid: #ffffff;
+
+$radius-lg: 18px;
+$radius-md: 14px;
+
+:host {
+  display: block;
+  color: $text;
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 .sheet-title {
   position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 24px);
-  text-align: center;
-  font-size: clamp(1.25rem, 2.8vw, 1.9rem);
-  font-weight: 600;
-  color: $text;
+  padding: 0 25px 15px;
+  text-align: left;
+
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+
+  padding-bottom: 15px;
 }
-.sheet-close { position: absolute; top: 6px; right: 6px; }
+
+.sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
 
 .sheet-body {
-  padding: clamp(10px, 2.3vw, 24px);
-  max-height: calc(100dvh - 160px);
+  padding: 14px 18px 18px;
+  max-height: min(72vh, calc(100dvh - 180px));
   overflow: auto;
 }
 
 .sheet-card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.13);
-  padding: clamp(28px, 3vw, 32px);
-  width: clamp(2px, auto, 640px);
+  width: 90%;
+  max-width: 560px;
   margin-inline: auto;
+
+  padding: 18px;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+
+  background: $card-bg;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
 }
 
 .form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 2.4vw, 24px);
 }
-.full { width: 100%; }
+
+.full {
+  width: 100%;
+}
+
+.description {
+  margin-top: 15px;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+  --mdc-outlined-text-field-container-height: 44px;
+  --mat-form-field-container-height: 44px;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-text-field--outlined {
+  background: $card-bg-solid;
+  border-radius: $radius-md;
+  height: auto;
+  align-items: stretch;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-flex {
+  height: auto;
+  align-items: stretch;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-infix {
+  min-height: 44px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-text-field__input {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 24px;
+  line-height: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-select-trigger {
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .mat-mdc-form-field textarea.mdc-text-field__input {
+  height: auto;
+  min-height: 90px;
+  line-height: 20px;
+  padding: 8px 0 !important;
+  align-self: stretch;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__trailing,
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__notch {
+  border-color: $border;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+  border-color: rgba(79, 70, 229, 0.55);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
+  color: $muted;
+  font-weight: 700;
+}
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: $primary;
+}
+
+:host ::ng-deep .mat-mdc-select-value {
+  color: $text;
+  font-weight: 600;
+}
+:host ::ng-deep .mat-mdc-select-arrow {
+  color: rgba(15, 23, 42, 0.55);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 4px;
+}
+:host ::ng-deep .mat-mdc-form-field-error {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mat-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b42318;
+}
+
+.global-error-message {
+  margin-top: 5px;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(180, 35, 24, 0.22);
+  background: rgba(180, 35, 24, 0.06);
+}
 
 .actions {
+  margin-top: 10px;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 6px;
-
-  .mat-mdc-stroked-button {
-    border-color: $muted;
-    color: $text;
-    font-weight: 600;
-    &:hover { border-color: $primary; color: $primary; background: rgba(0, 82, 204, .05); }
-  }
-
-  .mat-mdc-unelevated-button {
-    background-color: $primary;
-    color: #fff;
-    font-weight: 600;
-    padding: 10px 28px;
-    box-shadow: 0 3px 5px rgba(0, 82, 204, 0.4);
-    transition: background-color .3s ease;
-
-    &:hover:not(:disabled) { background-color: $primary-hover; box-shadow: 0 6px 12px rgba(0, 82, 204, 0.6); }
-    &:disabled { background-color: color.adjust(#5a6575, $lightness: 50%); box-shadow: none; cursor: not-allowed; }
-  }
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-@media (max-width: 600px) {
-  .sheet-card { border-radius: 14px; }
+:host ::ng-deep button.mat-mdc-outlined-button,
+:host ::ng-deep button.mat-mdc-unelevated-button,
+:host ::ng-deep button.mat-mdc-raised-button,
+:host ::ng-deep button.mat-mdc-button {
+  height: 40px;
+  border-radius: $radius-md;
+  padding: 0 14px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+  opacity: 0.75;
+}
+
+:host ::ng-deep button.mat-mdc-outlined-button {
+  border-color: $border !important;
+  color: $text !important;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+:host ::ng-deep button.mat-mdc-outlined-button:hover {
+  border-color: rgba(79, 70, 229, 0.30) !important;
+  background: rgba(79, 70, 229, 0.06);
+  color: $primary !important;
+}
+
+:host ::ng-deep button.mat-mdc-unelevated-button.mat-primary,
+:host ::ng-deep button.mat-mdc-raised-button.mat-primary {
+  background: $primary !important;
+  color: #fff !important;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+}
+
+:host ::ng-deep button.mat-mdc-unelevated-button.mat-primary:hover:not([disabled]),
+:host ::ng-deep button.mat-mdc-raised-button.mat-primary:hover:not([disabled]) {
+  background: $primary-hover !important;
+}
+
+:host ::ng-deep button[disabled] {
+  opacity: 0.45;
+}
+
+@media (max-width: 500px) {
+  .sheet-card {
+    width: 90%;
+    max-width: 100%;
+    padding: 18px 16px;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
 }

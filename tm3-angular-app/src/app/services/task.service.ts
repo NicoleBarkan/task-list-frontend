@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Task } from '../models/task.model';
+import { TaskUpdateDto } from '../models/TaskUpdateDto';
+import { TaskCreateDto } from '../models/TaskCreateDto';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
@@ -23,16 +25,16 @@ export class TaskService {
     return this.getTasks({ groupId });
   }
 
-  addTask(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.tasksEndpoint, task);
+  addTask(dto: TaskCreateDto): Observable<Task> {
+    return this.http.post<Task>(this.tasksEndpoint, dto);
+  }
+
+  updateTask(id: number, dto: TaskUpdateDto | TaskCreateDto): Observable<Task> {
+    return this.http.put<Task>(`${this.tasksEndpoint}/${id}`, dto);
   }
 
   deleteTask(id: number): Observable<void> {
     return this.http.delete<void>(`${this.tasksEndpoint}/${id}`);
-  }
-
-  updateTask(id: number, updatedTask: Partial<Task>): Observable<Task> {
-    return this.http.put<Task>(`${this.tasksEndpoint}/${id}`, updatedTask);
   }
 
   getTaskById(id: number): Observable<Task> {

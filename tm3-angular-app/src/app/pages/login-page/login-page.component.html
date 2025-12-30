@@ -5,21 +5,25 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'LOGIN.USERNAME_LABEL' | translate }}</mat-label>
       <input matInput formControlName="username" [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
-      <mat-error *ngIf="form.controls['username'].hasError('required')">
-        {{ 'LOGIN.USERNAME_REQUIRED' | translate }}
-      </mat-error>
     </mat-form-field>
+    @if (form.controls.username.touched || loginAttempted()) {
+    @if (form.controls.username.hasError('required')) {
+    <mat-error>{{ 'LOGIN.USERNAME_REQUIRED' | translate }}</mat-error>
+    }
+    }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'LOGIN.PASSWORD_LABEL' | translate }}</mat-label>
       <input matInput type="password" formControlName="password" [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" />
-      <mat-error *ngIf="form.controls['password'].hasError('required')">
-        {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
-      </mat-error>
     </mat-form-field>
+    @if (form.controls.password.touched || loginAttempted()) {
+    @if (form.controls.password.hasError('required')) {
+    <mat-error>{{ 'LOGIN.PASSWORD_REQUIRED' | translate }}</mat-error>
+    }
+    }
 
     <div *ngIf="loginAttempted() && errorMessage()" class="mat-error global-error-message">
-      {{ errorMessage() }}
+      {{ errorMessage() | translate }}
     </div>
 
     <div class="form-actions">

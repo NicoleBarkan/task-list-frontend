@@ -22,6 +22,11 @@ import { AuthStore } from '../../store/auth/auth.store';
 import { GroupService } from '../../services/group.service';
 import { GroupDto } from '../../models/group.model';
 import { getGroupNameById } from '../../utils/display.utils';
+import { TaskUpdateDto } from '../../models/TaskUpdateDto';
+
+type TaskUpdatePayload = Partial<Task> & {
+  group?: { id: number };
+};
 
 @Component({
   selector: 'app-task-details-page',
@@ -48,8 +53,13 @@ export class TaskDetailsPageComponent implements OnInit {
   private authStore = inject(AuthStore);
   private groupsService = inject(GroupService);             
 
+  readonly UNASSIGNED_GROUP_ID = 1;
+
   task: Signal<Task | null> = this.store.selectSignal(selectSelectedTask);
-  users: Signal<ReadonlyArray<User>> = this.usersStore.users;
+  allUsers: Signal<ReadonlyArray<User>> = this.usersStore.users;
+  users = computed(() =>
+    this.allUsers().filter(u => u.groupId !== this.UNASSIGNED_GROUP_ID)
+  );
 
   assignedToId = computed(() => this.task()?.assignedTo ?? null);
 
@@ -74,15 +84,37 @@ export class TaskDetailsPageComponent implements OnInit {
   onAssignedToChange(newUserId: number | null) {
     const task = this.task();
     if (!task) return;
-    const updated: Task = { ...task, assignedTo: newUserId ?? undefined };
-    this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
+    const payload: TaskUpdateDto = {
+      assignedToId: newUserId ?? null
+    };
+
+    this.store.dispatch(
+      TasksActions.updateTask({ id: task.id, updatedTask: payload })
+    );
   }
 
   onGroupChange(newGroupId: number | null) {
     const task = this.task();
     if (!task || newGroupId == null) return;
-    const updated: Partial<Task> = { groupId: newGroupId };
-    this.store.dispatch(TasksActions.updateTask({ id: task.id, updatedTask: updated }));
+
+    const assigneeId = task.assignedTo ?? null;
+
+    const shouldUnassign =
+      newGroupId === this.UNASSIGNED_GROUP_ID ||
+      (assigneeId != null && (() => {
+        const user = this.users().find(u => u.id === assigneeId);
+        const userGroupId = user?.groupId ?? null;
+        return userGroupId != null && userGroupId !== newGroupId;
+      })());
+
+    const payload: TaskUpdateDto = {
+      groupId: newGroupId,
+      assignedToId: shouldUnassign ? null : assigneeId
+    };
+
+    this.store.dispatch(
+      TasksActions.updateTask({ id: task.id, updatedTask: payload })
+    );
   }
 
   isAdminOrManager(): boolean {
@@ -92,7 +124,7 @@ export class TaskDetailsPageComponent implements OnInit {
   get assignedUserName(): string {
     const currentId = this.assignedToId();
     if (!currentId) return 'Unassigned';
-    const user = this.users().find((u) => u.id === currentId);
+    const user = this.allUsers().find((u) => u.id === currentId);
     return user ? `${user.firstName} ${user.lastName}` : 'Unassigned';
   }
 
@@ -101,4 +133,5 @@ export class TaskDetailsPageComponent implements OnInit {
   }
 
   trackById = (_: number, u: User) => u.id;
+
 }

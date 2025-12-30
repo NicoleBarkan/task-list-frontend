@@ -1,38 +1,47 @@
 <div class="task-details-wrapper">
-  <ng-container *ngIf="task() as task; else notFound">
-    <mat-card class="task-card">
-      <mat-card-header>
-        <mat-card-title>{{ task.title }}</mat-card-title>
-        <mat-card-subtitle>
-          {{ task.type | titlecase }} &bull; {{ task.status | titlecase }}
-        </mat-card-subtitle>
-      </mat-card-header>
+  <div class="task-details-container">
+    <div class="back-bar">
+      <button class="back-btn" mat-stroked-button routerLink="/tasks">
+        ← {{ 'TASK.DETAILS.BACK' | translate }}
+      </button>
+    </div>
 
-      <mat-card-content>
-        <section class="section">
-          <h3>{{ 'TASK.DETAILS.DESCRIPTION' | translate }}</h3>
-          <p>{{ task.description || ('TASK.DETAILS.NO_DESCRIPTION' | translate) }}</p>
-        </section>
+    <ng-container *ngIf="task() as task; else notFound">
+      <mat-card class="task-card">
+        <mat-card-header>
+          <mat-card-title>{{ task.title }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ task.type | titlecase }} &bull; {{ task.status | titlecase }}
+          </mat-card-subtitle>
+        </mat-card-header>
 
-        <section class="section">
-          <h3>{{ 'TASK.DETAILS.ASSIGNED_TO' | translate }}</h3>
+        <mat-card-content>
+          <section class="section">
+            <div class="details">
+              <h3>{{ 'TASK.DETAILS.DESCRIPTION' | translate }}</h3>
+              <p>{{ task.description || ('TASK.DETAILS.NO_DESCRIPTION' | translate) }}</p>
+            </div>
+          </section>
 
-          <ng-container *ngIf="isAdminOrManager(); else readonlyAssignedUser">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
-              <mat-select [value]="assignedToId()" (selectionChange)="onAssignedToChange($event.value)">
-                <mat-option [value]="null">{{ 'TASK.DETAILS.UNASSIGNED' | translate }}</mat-option>
-                <mat-option *ngFor="let user of users(); trackBy: trackById" [value]="user.id">
-                  {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </ng-container>
+          <section class="section">
+            <h3>{{ 'TASK.DETAILS.ASSIGNED_TO' | translate }}</h3>
 
-          <ng-template #readonlyAssignedUser>
-            <p><strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong> {{ assignedUserName }}</p>
-          </ng-template>
-        </section>
+            <ng-container *ngIf="isAdminOrManager(); else readonlyAssignedUser">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'TASK.DETAILS.SELECT_USER' | translate }}</mat-label>
+                <mat-select [value]="assignedToId()" (selectionChange)="onAssignedToChange($event.value)">
+                  <mat-option [value]="null">{{ 'TASK.DETAILS.UNASSIGNED' | translate }}</mat-option>
+                  <mat-option *ngFor="let user of users(); trackBy: trackById" [value]="user.id">
+                    {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-template #readonlyAssignedUser>
+              <p><strong>{{ 'TASK.DETAILS.ASSIGNED_LABEL' | translate }}:</strong> {{ assignedUserName }}</p>
+            </ng-template>
+          </section>
 
           <section class="section">
             <h3>{{ 'TASK.DETAILS.GROUP' | translate }}</h3>
@@ -41,48 +50,40 @@
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>{{ 'TASK.DETAILS.GROUP' | translate }}</mat-label>
                 <mat-select [value]="groupId()" (selectionChange)="onGroupChange($event.value)">
-                  <mat-option *ngFor="let g of groups()" [value]="g.id">{{ g.name }}</mat-option>
+                  <mat-option *ngFor="let g of groups()" [value]="g.id">{{ g.title }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </ng-container>
 
             <ng-template #readonlyGroup>
-              <p><strong>{{ 'TASK.DETAILS.GROUP' | translate }}:</strong>
+              <p>
+                <strong>{{ 'TASK.DETAILS.GROUP' | translate }}:</strong>
                 {{ currentGroupNameById(groupId()) || ('GROUP_LIST.NO_DESCRIPTION' | translate) }}
               </p>
             </ng-template>
           </section>
 
-        <section class="section">
-          <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
-          <p>{{ 'TASK.DETAILS.CREATED' | translate }}<br />
-            <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
-          </p>
-          <p *ngIf="task.updatedOn">
-            {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
-            <span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0300' }}</span>
-          </p>
-        </section>
-      </mat-card-content>
+          <section class="section">
+            <h3>{{ 'TASK.DETAILS.DATES' | translate }}</h3>
+            <p>
+              {{ 'TASK.DETAILS.CREATED' | translate }}<br />
+              <span class="task-date">{{ task.createdOn | date: 'dd.MM.yyyy, HH:mm' : '+0200' }}</span>
+            </p>
+            <p *ngIf="task.updatedOn">
+              {{ 'TASK.DETAILS.UPDATED' | translate }}<br />
+              <span class="task-date">{{ task.updatedOn | date: 'dd.MM.yyyy, HH:mm' : '+0200' }}</span>
+            </p>
+          </section>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
 
-      <mat-card-actions>
-        <button mat-stroked-button color="primary" routerLink="/tasks">
-          ← {{ 'TASK.DETAILS.BACK' | translate }}
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </ng-container>
-
-  <ng-template #notFound>
-    <mat-card class="task-card">
-      <mat-card-content>
-        <p>{{ 'TASK.DETAILS.NOT_FOUND' | translate }}</p>
-        <mat-card-actions>
-          <button mat-stroked-button color="primary" routerLink="/tasks">
-            ← {{ 'TASK.DETAILS.BACK' | translate }}
-          </button>
-        </mat-card-actions>
-      </mat-card-content>
-    </mat-card>
-  </ng-template>
+    <ng-template #notFound>
+      <mat-card class="task-card">
+        <mat-card-content>
+          <p>{{ 'TASK.DETAILS.NOT_FOUND' | translate }}</p>
+        </mat-card-content>
+      </mat-card>
+    </ng-template>
+  </div>
 </div>

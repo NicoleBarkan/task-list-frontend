@@ -58,9 +58,16 @@ export class GroupDetailsPageComponent implements OnInit {
     });
 
     this.userService.list({ groupId: id }).subscribe({
-      next: list => this.users.set(list),
+      next: (list: User[]) => this.users.set(list),
       error: () => {},
     });
-
   }
+
+  private loadTasksForGroup(id: number) {
+    this.taskService.getTasksByGroup(id).subscribe({
+      next: list => this.tasks.set(list),
+      error: () => {}
+    });
+  }
+
 }
